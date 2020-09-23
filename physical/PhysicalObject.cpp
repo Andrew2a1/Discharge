@@ -48,6 +48,5 @@ PhysicalMemento *PhysicalObject::createMemento() const
 
 void PhysicalObject::restoreMemento(const PhysicalMemento *memento)
 {
-    PhysicalState* old = memento->getState();
-    state = *old;
+    state = *memento->getState();
 }
