@@ -14,6 +14,9 @@ private:
     void setState(PhysicalState *state);
     PhysicalState *getState() const;
 
+protected:
+    PhysicalMemento() = default;
+
 public:
     ~PhysicalMemento();
 };
