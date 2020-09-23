@@ -10,10 +10,20 @@ CONFIG += c++11
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    physical/PhysicalMemento.cpp \
+    physical/PhysicalObject.cpp \
+    toolbox/matrix.cpp \
+    toolbox/vector.cpp
 
 HEADERS += \
-    mainwindow.h
+    mainwindow.h \
+    physical/PhysicalMemento.h \
+    physical/PhysicalObject.h \
+    physical/PhysicalState.h \
+    toolbox/matrix.h \
+    toolbox/matrixexception.h \
+    toolbox/vector.h
 
 FORMS += \
     mainwindow.ui
