@@ -8,7 +8,7 @@ PhysicalObject::PhysicalObject(double mass)
     state  = new PhysicalState;
     modifier = new PhysicalModifier;
 
-    state->mass = mass;
+    setMass(mass);
 }
 
 PhysicalObject::~PhysicalObject()
