@@ -15,7 +15,13 @@ void PhysicalModifier::applyForce(PhysicalObject *physical,
                                   double dt) const
 {
     Vector<double> v = physical->getVelocity();
-    v += force / physical->getMass() * dt;
+    Vector<double> s = physical->getPosition();
+    const Vector<double> dv = force / physical->getMass() *dt;
+
+    s += v*dt + dv*dt/2;
+    v += dv;
+
+    physical->setPosition(s);
     physical->setVelocity(v);
 }
 
