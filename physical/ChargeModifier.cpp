@@ -10,7 +10,7 @@ Vector<double> ChargeModifier::calculateForce(const PhysicalObject *obj, const P
 {
     const ElectricCharge *charge1 = dynamic_cast<const ElectricCharge*>(obj);
     const ElectricCharge *charge2 = dynamic_cast<const ElectricCharge*>(other);
-    Vector<double> force(2);
+    Vector<double> force(obj->getPosition().size());
 
     if(charge1 && charge2)
     {
@@ -21,5 +21,5 @@ Vector<double> ChargeModifier::calculateForce(const PhysicalObject *obj, const P
                     (4*PI*e0 * std::pow(distance, 3));
     }
 
-    return force + PhysicalModifier::calculateForce(obj, other);
+    return force;
 }

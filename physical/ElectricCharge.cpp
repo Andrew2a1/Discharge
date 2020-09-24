@@ -7,7 +7,7 @@ ElectricCharge::ElectricCharge(double charge, double mass) :
     PhysicalObject(mass),
     charge(charge)
 {
-    setModifier(new ChargeModifier);
+    addModifier(new ChargeModifier);
 }
 
 double ElectricCharge::getCharge() const
