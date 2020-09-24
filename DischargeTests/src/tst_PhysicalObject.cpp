@@ -67,7 +67,7 @@ TEST_CASE("PhysicalObject calculate force", "[PhysicalObject]")
     physical2.setPosition(Vector<>({1.4142, 1.4142, 0})); // 2m distance
 
     CHECK(physical1.calculateForce(&physical2) == -physical2.calculateForce(&physical1));
-    CHECK(physical1.calculateForce(&physical2).round(0.1) == Vector<>({-11.8, -11.8, 0}));
+    CHECK(physical1.calculateForce(&physical2).round(0.1) == Vector<>({11.8, 11.8, 0}));
 }
 
 TEST_CASE("PhysicalObject memento", "[PhysicalObject]")
