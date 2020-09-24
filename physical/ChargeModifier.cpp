@@ -6,6 +6,18 @@
 constexpr double e0 = 8.84e-12;
 constexpr double PI = 3.14159265359;
 
+void ChargeModifier::applyTime(PhysicalObject *physical, double dt) const
+{
+
+}
+
+void ChargeModifier::applyForce(PhysicalObject *physical,
+                                const Vector<double> &force,
+                                double dt) const
+{
+
+}
+
 Vector<double> ChargeModifier::calculateForce(const PhysicalObject *obj, const PhysicalObject *other) const
 {
     const ElectricCharge *charge1 = dynamic_cast<const ElectricCharge*>(obj);
@@ -14,10 +26,10 @@ Vector<double> ChargeModifier::calculateForce(const PhysicalObject *obj, const P
 
     if(charge1 && charge2)
     {
-        force = obj->getPosition() - other->getPosition();
+        force = other->getPosition() - obj->getPosition();
         const double distance = force.abs();
 
-        force *= charge1->getCharge() * charge2->getCharge() /
+        force *= (charge1->getCharge() * charge2->getCharge()) /
                     (4*PI*e0 * std::pow(distance, 3));
     }
 

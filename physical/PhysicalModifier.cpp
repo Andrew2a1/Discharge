@@ -28,7 +28,7 @@ void PhysicalModifier::applyForce(PhysicalObject *physical,
 Vector<double> PhysicalModifier::calculateForce(const PhysicalObject *obj,
                                                 const PhysicalObject *other) const
 {
-    Vector<double> force = obj->getPosition() - other->getPosition();
+    Vector<double> force = other->getPosition() - obj->getPosition();
     double distance = force.abs();
 
     force *= obj->getMass() * other->getMass() * G / std::pow(distance, 3);
