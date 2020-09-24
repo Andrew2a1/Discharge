@@ -52,10 +52,9 @@ TEST_CASE("PhysicalObject apply time", "[PhysicalObject]")
         PhysicalObject physical(1.0);
 
         physical.setVelocity(Vector<>({1, 0, 1}));
-        physical.applyForce(Vector<>({0, 1, 0}), 0.5);
-        physical.applyTime(2.0);
+        physical.applyForce(Vector<>({0, 1, 0}), 2);
 
-        CHECK(physical.getPosition() == Vector<>({2, 1, 2}));
+        CHECK(physical.getPosition() == Vector<>({2, 2, 2}));
     }
 }
 
@@ -69,7 +68,7 @@ TEST_CASE("PhysicalObject memento", "[PhysicalObject]")
     physical.setVelocity(Vector<>({2, 1, 1}));
 
     memento = physical.createMemento();
-    
+
     physical.setMass(20);
     physical.setPosition(Vector<>({50, 0, 1}));
 
