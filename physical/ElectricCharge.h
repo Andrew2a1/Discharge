@@ -8,7 +8,7 @@ class ElectricCharge : public PhysicalObject
     double charge;
 
 public:
-    ElectricCharge(double charge = 1.0, double mass = 1.0);
+    ElectricCharge(double mass = 1.0, double charge = 1.0);
     virtual ~ElectricCharge() = default;
 
     double getCharge() const;

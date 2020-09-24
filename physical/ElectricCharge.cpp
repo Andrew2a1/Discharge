@@ -3,7 +3,7 @@
 #include "ChargeState.h"
 #include "PhysicalMemento.h"
 
-ElectricCharge::ElectricCharge(double charge, double mass) :
+ElectricCharge::ElectricCharge(double mass, double charge) :
     PhysicalObject(mass),
     charge(charge)
 {
