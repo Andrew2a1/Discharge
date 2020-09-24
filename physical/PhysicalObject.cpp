@@ -5,8 +5,10 @@
 
 PhysicalObject::PhysicalObject(double mass)
 {
-    state  = new PhysicalState(mass, Vector<double>(2), Vector<double>(2));
+    state  = new PhysicalState;
     modifier = new PhysicalModifier;
+
+    state->mass = mass;
 }
 
 PhysicalObject::~PhysicalObject()
