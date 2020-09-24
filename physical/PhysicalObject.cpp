@@ -5,15 +5,15 @@
 
 PhysicalObject::PhysicalObject(double mass)
 {
-    state  = new PhysicalState;
-    modifier = new PhysicalModifier;
-
+    state = new PhysicalState;
+    addModifier(new PhysicalModifier);
     setMass(mass);
 }
 
 PhysicalObject::~PhysicalObject()
 {
-    delete modifier;
+    delete state;
+    clearModifiers();
 }
 
 double PhysicalObject::getMass() const
@@ -46,25 +46,44 @@ void PhysicalObject::setVelocity(const Vector<double> &velocity)
     state->velocity = velocity;
 }
 
-void PhysicalObject::setModifier(PhysicalModifier *modifier)
+void PhysicalObject::addModifier(PhysicalModifier *modifier)
 {
-    delete this->modifier;
-    this->modifier = modifier;
+    modifiers.push_back(modifier);
+}
+
+void PhysicalObject::removeModifier(PhysicalModifier *modifier)
+{
+    modifiers.remove(modifier);
+}
+
+void PhysicalObject::clearModifiers()
+{
+    for(auto &modifier: modifiers)
+        delete modifier;
+    
+    modifiers.clear();
 }
 
 void PhysicalObject::applyTime(double dt)
 {
-    modifier->applyTime(this, dt);
+    for(auto &modifier: modifiers)
+        modifier->applyTime(this, dt);
 }
 
 void PhysicalObject::applyForce(const Vector<double> &force, double dt)
 {
-    modifier->applyForce(this, force, dt);
+    for(auto &modifier: modifiers)
+        modifier->applyForce(this, force, dt);
 }
 
 Vector<double> PhysicalObject::calculateForce(const PhysicalObject *other) const
 {
-    return modifier->calculateForce(this, other);
+    Vector<double> force(getPosition().size());
+
+    for(auto &modifier: modifiers)
+        force += modifier->calculateForce(this, other);
+
+    return force;
 }
 
 PhysicalMemento *PhysicalObject::createMemento() const
