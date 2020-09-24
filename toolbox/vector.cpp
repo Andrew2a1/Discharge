@@ -1,3 +1,6 @@
+#ifndef VECTOR_CPP
+#define VECTOR_CPP
+
 #include "vector.h"
 #include "matrix.h"
 #include "matrixexception.h"
@@ -255,3 +258,5 @@ Vector<T>::operator const Matrix<T> &() const
 {
     return *matrix;
 }
+
+#endif
