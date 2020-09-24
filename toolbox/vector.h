@@ -37,6 +37,7 @@ public:
     bool isColumn() const;
     T abs() const;
 
+    Vector<T> &normalize();
     Vector<T> &round(const T &minimum = 1E-9);
     Vector<T> &transpose();
 

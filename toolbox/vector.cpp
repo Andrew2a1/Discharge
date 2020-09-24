@@ -100,6 +100,12 @@ T Vector<T>::abs() const
 }
 
 template<typename T>
+Vector<T> &Vector<T>::normalize()
+{
+    return *this /= abs();
+}
+
+template<typename T>
 Vector<T> &Vector<T>::round(const T &minimum)
 {
     matrix->round(minimum);
