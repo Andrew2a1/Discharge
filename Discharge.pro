@@ -11,14 +11,21 @@ CONFIG += c++11
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
+    physical/ChargeModifier.cpp \
+    physical/ElectricCharge.cpp \
     physical/PhysicalMemento.cpp \
+    physical/PhysicalModifier.cpp \
     physical/PhysicalObject.cpp \
     toolbox/matrix.cpp \
     toolbox/vector.cpp
 
 HEADERS += \
     mainwindow.h \
+    physical/ChargeModifier.h \
+    physical/ChargeState.h \
+    physical/ElectricCharge.h \
     physical/PhysicalMemento.h \
+    physical/PhysicalModifier.h \
     physical/PhysicalObject.h \
     physical/PhysicalState.h \
     toolbox/matrix.h \

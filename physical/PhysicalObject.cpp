@@ -1,46 +1,74 @@
 #include "PhysicalObject.h"
 #include "PhysicalMemento.h"
 #include "PhysicalState.h"
+#include "PhysicalModifier.h"
 
 PhysicalObject::PhysicalObject(double mass)
 {
-    state = {mass, Vector<double>(2), Vector<double>(2)};
+    state  = new PhysicalState(mass, Vector<double>(2), Vector<double>(2));
+    modifier = new PhysicalModifier;
+}
+
+PhysicalObject::~PhysicalObject()
+{
+    delete modifier;
 }
 
 double PhysicalObject::getMass() const
 {
-    return state.mass;
+    return state->mass;
 }
 
 const Vector<double> &PhysicalObject::getPosition() const
 {
-    return state.position;
+    return state->position;
 }
 
 const Vector<double> &PhysicalObject::getVelocity() const
 {
-    return state.velocity;
+    return state->velocity;
 }
 
 void PhysicalObject::setMass(double mass)
 {
-    state.mass = mass;
+    state->mass = mass;
 }
 
 void PhysicalObject::setPosition(const Vector<double> &position)
 {
-    state.position = position;
+    state->position = position;
 }
 
 void PhysicalObject::setVelocity(const Vector<double> &velocity)
 {
-   state.velocity = velocity;
+    state->velocity = velocity;
+}
+
+void PhysicalObject::setModifier(PhysicalModifier *modifier)
+{
+    delete this->modifier;
+    this->modifier = modifier;
+}
+
+void PhysicalObject::applyTime(double dt)
+{
+    modifier->applyTime(this, dt);
+}
+
+void PhysicalObject::applyForce(const Vector<double> &force, double dt)
+{
+    modifier->applyForce(this, force, dt);
+}
+
+Vector<double> PhysicalObject::calculateForce(const PhysicalObject *other) const
+{
+    return modifier->calculateForce(this, other);
 }
 
 PhysicalMemento *PhysicalObject::createMemento() const
 {
     PhysicalMemento *memento = new PhysicalMemento();
-    PhysicalState *current = new PhysicalState(state);
+    PhysicalState *current = new PhysicalState(*state);
 
     memento->setState(current);
     return memento;
@@ -48,5 +76,5 @@ PhysicalMemento *PhysicalObject::createMemento() const
 
 void PhysicalObject::restoreMemento(const PhysicalMemento *memento)
 {
-    state = *memento->getState();
+    state = memento->getState();
 }

@@ -2,11 +2,13 @@
 #define PHYSICALMEMENTO_H
 
 class PhysicalObject;
+class ElectricCharge;
 class PhysicalState;
 
 class PhysicalMemento
 {
     friend class PhysicalObject;
+    friend class ElectricCharge;
 
 private:
     PhysicalState *state = nullptr;
@@ -18,7 +20,7 @@ protected:
     PhysicalMemento() = default;
 
 public:
-    ~PhysicalMemento();
+    virtual ~PhysicalMemento();
 };
 
 #endif // PHYSICALMEMENTO_H
