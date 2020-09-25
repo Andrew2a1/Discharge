@@ -123,6 +123,19 @@ Vector<T> &Vector<T>::transpose()
 }
 
 template<typename T>
+bool Vector<T>::almostEqual(const Vector<T> &vector, const T &maxDelta) const
+{
+    if(vector_size != vector.size() || (isColumn() ^ vector.isColumn()))
+        return false;
+
+    for(int i = 0; i < vector_size; ++i)
+        if(!almostEqualNum((*this)[i], vector[i], maxDelta))
+            return false;
+
+    return true;
+}
+
+template<typename T>
 T &Vector<T>::operator[](int i)
 {
     int j = 0;
@@ -251,6 +264,12 @@ bool Vector<T>::operator==(const Vector<T> &vector) const
             return false;
 
     return true;
+}
+
+template<typename T>
+bool Vector<T>::operator!=(const Vector<T> &vector) const
+{
+    return !(*this == vector);
 }
 
 template<typename T>
