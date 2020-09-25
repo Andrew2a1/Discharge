@@ -21,13 +21,13 @@ FILES = $(notdir $(wildcard $(TESTS_SRC)/*.cpp) $(SRC))
 OBJS = $(foreach file,$(subst .cpp,.o,$(FILES)),$(BUILD_DIR)/$(file))
 
 all: build_dirs $(OBJS)
-	$(CC) $(INCLUDE_DIRS) -o $(OUT) $(OBJS)
+	$(CC) -g $(INCLUDE_DIRS) -o $(OUT) $(OBJS)
 
 $(BUILD_DIR)/%.o: $(TESTS_SRC)/%.cpp
-	$(CC) $(INCLUDE_DIRS) -c $< -o $@
+	$(CC) -g $(INCLUDE_DIRS) -c $< -o $@
 
 $(BUILD_DIR)/%.o: ../*/%.cpp
-	$(CC) $(INCLUDE_DIRS) -c $< -o $@
+	$(CC) -g $(INCLUDE_DIRS) -c $< -o $@
 
 build_dirs:
 	-mkdir $(BUILD_DIR)
