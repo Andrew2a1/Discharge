@@ -10,14 +10,23 @@ Simulation::~Simulation()
 
 void Simulation::applyTime(double dt)
 {
+
     for(auto &subject : subjects)
     {
+        int i = 0;
+
         for(auto &other : subjects)
         {
             if(subject != other)
             {
                 applyForcesBetween(subject, other, dt);
+                ++i;
             }
+        }
+
+        if(i == 0)
+        {
+            subject->applyTime(dt);
         }
     }
 }
