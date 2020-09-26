@@ -10,7 +10,6 @@ Simulation::~Simulation()
 
 void Simulation::applyTime(double dt)
 {
-
     for(auto &subject : subjects)
     {
         int i = 0;
