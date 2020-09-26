@@ -9,6 +9,7 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    gui/simulationwidget.cpp \
     main.cpp \
     mainwindow.cpp \
     physical/ChargeModifier.cpp \
@@ -16,10 +17,13 @@ SOURCES += \
     physical/PhysicalMemento.cpp \
     physical/PhysicalModifier.cpp \
     physical/PhysicalObject.cpp \
+    physical/Simulation.cpp \
+    physical/SimulationState.cpp \
     toolbox/matrix.cpp \
     toolbox/vector.cpp
 
 HEADERS += \
+    gui/simulationwidget.h \
     mainwindow.h \
     physical/ChargeModifier.h \
     physical/ChargeState.h \
@@ -28,11 +32,14 @@ HEADERS += \
     physical/PhysicalModifier.h \
     physical/PhysicalObject.h \
     physical/PhysicalState.h \
+    physical/Simulation.h \
+    physical/SimulationState.h \
     toolbox/matrix.h \
     toolbox/matrixexception.h \
     toolbox/vector.h
 
 FORMS += \
+    gui/simulationwidget.ui \
     mainwindow.ui
 
 # Default rules for deployment.
