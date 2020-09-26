@@ -22,6 +22,32 @@ SimulationWidget::~SimulationWidget()
     delete ui;
 }
 
+void SimulationWidget::addToSimulation(PhysicalObject *physical)
+{
+    simulation.addSubject(physical);
+}
+
+void SimulationWidget::addGraphicObject(GraphicObject *object)
+{
+    graphicObjects.append(object);
+}
+
+void SimulationWidget::removeGraphicObject(GraphicObject *object)
+{
+    graphicObjects.removeOne(object);
+}
+
+void SimulationWidget::clearScene()
+{
+    graphicObjects.clear();
+}
+
+void SimulationWidget::applyTime(double dt)
+{
+    simulation.applyTime(dt);
+    updateGeometry();
+}
+
 void SimulationWidget::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
@@ -30,7 +56,11 @@ void SimulationWidget::paintEvent(QPaintEvent *event)
     painter.translate(translation);
     painter.scale(scale, scale);
 
-    painter.drawEllipse(0, 0, 100, 100);
+    for(auto& graphic : graphicObjects)
+    {
+        graphic->draw(&painter);
+    }
+
     QWidget::paintEvent(event);
 }
 

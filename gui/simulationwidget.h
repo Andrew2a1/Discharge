@@ -3,6 +3,10 @@
 
 #include <QWidget>
 #include <QPoint>
+#include <QList>
+
+#include "physical/Simulation.h"
+#include "graphicobject.h"
 
 namespace Ui {
 class SimulationWidget;
@@ -14,6 +18,9 @@ class SimulationWidget : public QWidget
 
 private:
     Ui::SimulationWidget *ui;
+    Simulation simulation;
+
+    QList<GraphicObject*> graphicObjects;
 
     QPoint translation;
     QPoint clickedPoint;
@@ -25,6 +32,14 @@ private:
 public:
     explicit SimulationWidget(QWidget *parent = nullptr);
     ~SimulationWidget();
+
+    void addToSimulation(PhysicalObject *physical);
+
+    void addGraphicObject(GraphicObject *object);
+    void removeGraphicObject(GraphicObject *object);
+    void clearScene();
+
+    void applyTime(double dt);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
