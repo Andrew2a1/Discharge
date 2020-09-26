@@ -10,6 +10,7 @@ CONFIG += c++11
 
 SOURCES += \
     gui/simulationwidget.cpp \
+    gui/zoomwidget.cpp \
     main.cpp \
     mainwindow.cpp \
     physical/ChargeModifier.cpp \
@@ -24,6 +25,7 @@ SOURCES += \
 
 HEADERS += \
     gui/simulationwidget.h \
+    gui/zoomwidget.h \
     mainwindow.h \
     physical/ChargeModifier.h \
     physical/ChargeState.h \
@@ -40,6 +42,7 @@ HEADERS += \
 
 FORMS += \
     gui/simulationwidget.ui \
+    gui/zoomwidget.ui \
     mainwindow.ui
 
 # Default rules for deployment.
