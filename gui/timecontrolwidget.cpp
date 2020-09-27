@@ -35,7 +35,7 @@ void TimeControlWidget::setUpdateTarget(SimulationWidget *target)
 void TimeControlWidget::timerTimeout()
 {
     if(updateTarget)
-        updateTarget->applyTime(static_cast<double>(updateTime_ms) / 1000.0);
+        updateTarget->applyTime(static_cast<double>(simApplyTime) / 1000.0);
 }
 
 void TimeControlWidget::updateButtons()
@@ -46,7 +46,7 @@ void TimeControlWidget::updateButtons()
 
 void TimeControlWidget::updateTimeChanged(int newTime)
 {
-    updateTime_ms = newTime;
+    simApplyTime = newTime;
 }
 
 void TimeControlWidget::startPressed()

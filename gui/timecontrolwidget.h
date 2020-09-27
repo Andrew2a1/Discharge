@@ -19,7 +19,7 @@ private:
     SimulationWidget *updateTarget = nullptr;
     QTimer *timer;
 
-    int updateTime_ms = 100;
+    int simApplyTime = 100;
     bool isUpdating = false;
 
 public:
