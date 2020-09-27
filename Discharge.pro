@@ -10,8 +10,10 @@ CONFIG += c++11
 
 SOURCES += \
     gui/graphicobject.cpp \
+    gui/historywidget.cpp \
     gui/simulationgraphicobject.cpp \
     gui/simulationwidget.cpp \
+    gui/simulationwidgetstate.cpp \
     gui/timecontrolwidget.cpp \
     gui/zoomwidget.cpp \
     main.cpp \
@@ -28,8 +30,10 @@ SOURCES += \
 
 HEADERS += \
     gui/graphicobject.h \
+    gui/historywidget.h \
     gui/simulationgraphicobject.h \
     gui/simulationwidget.h \
+    gui/simulationwidgetstate.h \
     gui/timecontrolwidget.h \
     gui/zoomwidget.h \
     mainwindow.h \
@@ -42,11 +46,13 @@ HEADERS += \
     physical/PhysicalState.h \
     physical/Simulation.h \
     physical/SimulationState.h \
+    toolbox/history.h \
     toolbox/matrix.h \
     toolbox/matrixexception.h \
     toolbox/vector.h
 
 FORMS += \
+    gui/historywidget.ui \
     gui/simulationwidget.ui \
     gui/timecontrolwidget.ui \
     gui/zoomwidget.ui \

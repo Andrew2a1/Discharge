@@ -15,6 +15,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->action_Exit, SIGNAL(triggered()), this, SLOT(close()));
 
+    ui->simulation->saveCheckpoint();
+
     PhysicalObject *phys = new PhysicalObject(1e14);
     phys->setPosition(Vector<>({10, 20}));
     phys->setVelocity(Vector<>({2, 2}));
@@ -26,9 +28,13 @@ MainWindow::MainWindow(QWidget *parent)
     SimulationGraphicObject *obj = new SimulationGraphicObject(phys, this);
     SimulationGraphicObject *obj2 = new SimulationGraphicObject(phys2, this);
     ui->simulation->addGraphicObject(obj);
-    ui->simulation->addGraphicObject(obj2);
     ui->simulation->addToSimulation(phys);
+
+    ui->simulation->saveCheckpoint();
+
     ui->simulation->addToSimulation(phys2);
+    ui->simulation->addGraphicObject(obj2);
+    ui->simulation->saveCheckpoint();
 }
 
 MainWindow::~MainWindow()
