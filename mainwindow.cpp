@@ -29,19 +29,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->simulation->addGraphicObject(obj2);
     ui->simulation->addToSimulation(phys);
     ui->simulation->addToSimulation(phys2);
-
-    QTimer *timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &MainWindow::updateTime);
-    timer->start(5);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
-
-void MainWindow::updateTime()
-{
-    ui->simulation->applyTime(0.02);
-}
-
