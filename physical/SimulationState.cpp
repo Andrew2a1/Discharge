@@ -46,10 +46,9 @@ void SimulationState::clear()
 
 void SimulationState::restoreState()
 {
+    // FIXME
     for(auto &memento : mementos)
     {
         memento->object->restoreMemento(memento->memento);
     }
-
-    clear();
 }
