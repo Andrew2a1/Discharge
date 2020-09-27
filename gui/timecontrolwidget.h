@@ -4,6 +4,7 @@
 #include <QWidget>
 
 class SimulationWidget;
+class SimulationWidgetState;
 
 namespace Ui {
 class TimeControlWidget;
@@ -16,7 +17,10 @@ class TimeControlWidget : public QWidget
 
 private:
     Ui::TimeControlWidget *ui;
+
     SimulationWidget *updateTarget = nullptr;
+    SimulationWidgetState *checkpoint = nullptr;
+
     QTimer *timer;
 
     int simApplyTime = 100;
@@ -27,16 +31,20 @@ public:
     ~TimeControlWidget();
 
     void setUpdateTarget(SimulationWidget *target);
+    void setCheckpoint(SimulationWidgetState *newCheckpoint);
+    int getSimApplyTime();
+
+public slots:
+    void setSimApplyTime(int newTime);
 
 private:
     void timerTimeout();
     void updateButtons();
 
 private slots:
-    void updateTimeChanged(int newTime);
-
     void startPressed();
     void stopPressed();
+    void restoreCheckpoint();
 };
 
 #endif // TIMECONTROLWIDGET_H

@@ -19,7 +19,8 @@ TimeControlWidget::TimeControlWidget(QWidget *parent) :
     connect(timer, &QTimer::timeout, this, &TimeControlWidget::timerTimeout);
     connect(ui->startButton, &QPushButton::clicked, this, &TimeControlWidget::startPressed);
     connect(ui->pauseButton, &QPushButton::clicked, this, &TimeControlWidget::stopPressed);
-    connect(ui->timeSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateTimeChanged(int)));
+    connect(ui->restartButton, &QPushButton::clicked, this, &TimeControlWidget::restoreCheckpoint);
+    connect(ui->timeSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setSimApplyTime(int)));
 }
 
 TimeControlWidget::~TimeControlWidget()
@@ -30,6 +31,21 @@ TimeControlWidget::~TimeControlWidget()
 void TimeControlWidget::setUpdateTarget(SimulationWidget *target)
 {
     updateTarget = target;
+}
+
+void TimeControlWidget::setCheckpoint(SimulationWidgetState *newCheckpoint)
+{
+    checkpoint = newCheckpoint;
+}
+
+int TimeControlWidget::getSimApplyTime()
+{
+    return simApplyTime;
+}
+
+void TimeControlWidget::setSimApplyTime(int newTime)
+{
+    simApplyTime = newTime;
 }
 
 void TimeControlWidget::timerTimeout()
@@ -44,11 +60,6 @@ void TimeControlWidget::updateButtons()
     ui->pauseButton->setChecked(!isUpdating);
 }
 
-void TimeControlWidget::updateTimeChanged(int newTime)
-{
-    simApplyTime = newTime;
-}
-
 void TimeControlWidget::startPressed()
 {
     isUpdating = true;
@@ -61,4 +72,11 @@ void TimeControlWidget::stopPressed()
     isUpdating = false;
     timer->stop();
     updateButtons();
+}
+
+void TimeControlWidget::restoreCheckpoint()
+{
+    if(updateTarget && checkpoint)
+        updateTarget->restoreState(checkpoint);
+    updateTarget->updateGeometry();
 }
