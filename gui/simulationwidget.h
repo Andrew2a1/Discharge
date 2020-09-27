@@ -8,6 +8,8 @@
 #include "physical/Simulation.h"
 #include "graphicobject.h"
 
+class SimulationWidgetState;
+
 namespace Ui {
 class SimulationWidget;
 }
@@ -41,6 +43,11 @@ public:
 
     void applyTime(double dt);
 
+    SimulationWidgetState *createState();
+    void restoreState(SimulationWidgetState *state);
+
+    void saveCheckpoint();
+
 protected:
     void paintEvent(QPaintEvent *event) override;
 
@@ -49,6 +56,9 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
 
     void wheelEvent(QWheelEvent *event) override;
+
+private:
+    void saveToHistory();
 
 private slots:
     void updateZoom(int zoom);

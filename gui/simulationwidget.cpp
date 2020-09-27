@@ -1,5 +1,6 @@
 #include "simulationwidget.h"
 #include "ui_simulationwidget.h"
+#include "simulationwidgetstate.h"
 
 #include <QPainter>
 #include <QMouseEvent>
@@ -17,6 +18,7 @@ SimulationWidget::SimulationWidget(QWidget *parent) :
             this, &SimulationWidget::fitToContent);
 
     ui->timeControl->setUpdateTarget(this);
+    ui->historyWidget->setTarget(this);
 }
 
 SimulationWidget::~SimulationWidget()
@@ -48,6 +50,20 @@ void SimulationWidget::applyTime(double dt)
 {
     simulation.applyTime(dt);
     updateGeometry();
+}
+
+SimulationWidgetState *SimulationWidget::createState()
+{
+    SimulationWidgetState *widgetState = new SimulationWidgetState(this);
+    widgetState->simState = simulation.saveState();
+    widgetState->graphicObjects = graphicObjects;
+    return widgetState;
+}
+
+void SimulationWidget::restoreState(SimulationWidgetState *state)
+{
+    simulation.restoreState(state->simState);
+    graphicObjects = state->graphicObjects;
 }
 
 void SimulationWidget::paintEvent(QPaintEvent *event)
@@ -95,6 +111,7 @@ void SimulationWidget::mouseReleaseEvent(QMouseEvent *event)
 {
     isTranslating = false;
     setCursor(Qt::ArrowCursor);
+
     QWidget::mouseReleaseEvent(event);
 }
 
@@ -110,6 +127,17 @@ void SimulationWidget::wheelEvent(QWheelEvent *event)
     QWidget::wheelEvent(event);
 }
 
+void SimulationWidget::saveCheckpoint()
+{
+    saveToHistory();
+    ui->timeControl->setCheckpoint(createState());
+}
+
+void SimulationWidget::saveToHistory()
+{
+    ui->historyWidget->save(createState());
+}
+
 void SimulationWidget::updateZoom(int zoom)
 {
     scale = qMax(static_cast<qreal>(zoom) / 100.0, 0.05);
@@ -123,4 +151,5 @@ void SimulationWidget::fitToContent()
     // TODO
 
     ui->zoomWidget->setZoom(newZoom);
+    saveToHistory();
 }

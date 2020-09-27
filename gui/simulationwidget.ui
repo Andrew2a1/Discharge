@@ -40,24 +40,6 @@
      </property>
     </spacer>
    </item>
-   <item row="0" column="0">
-    <layout class="QHBoxLayout" name="historyControlLayout">
-     <item>
-      <widget class="QPushButton" name="undoButton">
-       <property name="text">
-        <string>&lt;--</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="redoButton">
-       <property name="text">
-        <string>--&gt;</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
    <item row="0" column="3">
     <spacer name="horizontalSpacer">
      <property name="orientation">
@@ -109,6 +91,11 @@
      <layout class="QHBoxLayout" name="timeControllLayout"/>
     </widget>
    </item>
+   <item row="0" column="0">
+    <widget class="HistoryWidget" name="historyWidget" native="true">
+     <layout class="QHBoxLayout" name="historyControlLayout"/>
+    </widget>
+   </item>
   </layout>
  </widget>
  <customwidgets>
@@ -122,6 +109,12 @@
    <class>TimeControlWidget</class>
    <extends>QWidget</extends>
    <header>gui/timecontrolwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>HistoryWidget</class>
+   <extends>QWidget</extends>
+   <header>gui/historywidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
