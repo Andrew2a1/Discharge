@@ -13,45 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" columnstretch="0,1,0,1,0">
-   <item row="0" column="3">
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="4" column="2">
-    <layout class="QHBoxLayout" name="timeControllLayout">
-     <item>
-      <widget class="QPushButton" name="restartButton">
-       <property name="text">
-        <string>&lt;&lt;</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pauseButton">
-       <property name="text">
-        <string>| |</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="startButton">
-       <property name="text">
-        <string>&gt;</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
+  <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0,0,0">
    <item row="3" column="0">
     <spacer name="verticalSpacer_2">
      <property name="orientation">
@@ -78,6 +40,37 @@
      </property>
     </spacer>
    </item>
+   <item row="0" column="0">
+    <layout class="QHBoxLayout" name="historyControlLayout">
+     <item>
+      <widget class="QPushButton" name="undoButton">
+       <property name="text">
+        <string>&lt;--</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="redoButton">
+       <property name="text">
+        <string>--&gt;</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="0" column="3">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
    <item row="2" column="4">
     <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,0">
      <item>
@@ -98,24 +91,6 @@
      </item>
     </layout>
    </item>
-   <item row="0" column="0">
-    <layout class="QHBoxLayout" name="historyControlLayout">
-     <item>
-      <widget class="QPushButton" name="undoButton">
-       <property name="text">
-        <string>&lt;--</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="redoButton">
-       <property name="text">
-        <string>--&gt;</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
    <item row="0" column="1">
     <spacer name="horizontalSpacer_2">
      <property name="orientation">
@@ -129,6 +104,11 @@
      </property>
     </spacer>
    </item>
+   <item row="4" column="2">
+    <widget class="TimeControlWidget" name="timeControl" native="true">
+     <layout class="QHBoxLayout" name="timeControllLayout"/>
+    </widget>
+   </item>
   </layout>
  </widget>
  <customwidgets>
@@ -136,6 +116,12 @@
    <class>ZoomWidget</class>
    <extends>QWidget</extends>
    <header>gui/zoomwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TimeControlWidget</class>
+   <extends>QWidget</extends>
+   <header>gui/timecontrolwidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

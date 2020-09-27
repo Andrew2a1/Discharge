@@ -15,6 +15,8 @@ SimulationWidget::SimulationWidget(QWidget *parent) :
 
     connect(ui->zoomWidget, &ZoomWidget::fitRequested,
             this, &SimulationWidget::fitToContent);
+
+    ui->timeControl->setUpdateTarget(this);
 }
 
 SimulationWidget::~SimulationWidget()
