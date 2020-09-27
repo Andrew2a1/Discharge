@@ -10,6 +10,11 @@ SimulationGraphicObject::SimulationGraphicObject(PhysicalObject *physicalObject,
 
 }
 
+SimulationGraphicObject::~SimulationGraphicObject()
+{
+    delete physical;
+}
+
 void SimulationGraphicObject::setPosition(const QPoint &newPosition)
 {
     Vector<double> position(2);

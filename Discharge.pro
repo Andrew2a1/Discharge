@@ -12,6 +12,7 @@ SOURCES += \
     gui/graphicobject.cpp \
     gui/simulationgraphicobject.cpp \
     gui/simulationwidget.cpp \
+    gui/timecontrolwidget.cpp \
     gui/zoomwidget.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -29,6 +30,7 @@ HEADERS += \
     gui/graphicobject.h \
     gui/simulationgraphicobject.h \
     gui/simulationwidget.h \
+    gui/timecontrolwidget.h \
     gui/zoomwidget.h \
     mainwindow.h \
     physical/ChargeModifier.h \
@@ -46,6 +48,7 @@ HEADERS += \
 
 FORMS += \
     gui/simulationwidget.ui \
+    gui/timecontrolwidget.ui \
     gui/zoomwidget.ui \
     mainwindow.ui
 
