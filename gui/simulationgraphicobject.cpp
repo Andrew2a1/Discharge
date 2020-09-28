@@ -15,6 +15,11 @@ SimulationGraphicObject::~SimulationGraphicObject()
     delete physical;
 }
 
+PhysicalObject *SimulationGraphicObject::getPhysical() const
+{
+    return physical;
+}
+
 void SimulationGraphicObject::setPosition(const QPoint &newPosition)
 {
     Vector<double> position(2);
@@ -40,6 +45,7 @@ void SimulationGraphicObject::draw(QPainter *painter)
 {
     const QPoint centre = pos();
     painter->drawEllipse(centre, RADIUS, RADIUS);
+    painter->drawText(getBounds(), Qt::AlignCenter ,"m");
 }
 
 GraphicObject *SimulationGraphicObject::clone() const

@@ -9,6 +9,7 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    gui/draggablegraphic.cpp \
     gui/graphicobject.cpp \
     gui/historywidget.cpp \
     gui/simulationgraphicobject.cpp \
@@ -29,6 +30,7 @@ SOURCES += \
     toolbox/vector.cpp
 
 HEADERS += \
+    gui/draggablegraphic.h \
     gui/graphicobject.h \
     gui/historywidget.h \
     gui/simulationgraphicobject.h \

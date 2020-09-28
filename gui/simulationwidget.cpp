@@ -1,9 +1,14 @@
 #include "simulationwidget.h"
 #include "ui_simulationwidget.h"
+
 #include "simulationwidgetstate.h"
+#include "simulationgraphicobject.h"
 
 #include <QPainter>
 #include <QMouseEvent>
+
+#include <QDragEnterEvent>
+#include <QMimeData>
 
 SimulationWidget::SimulationWidget(QWidget *parent) :
     QWidget(parent),
@@ -19,6 +24,8 @@ SimulationWidget::SimulationWidget(QWidget *parent) :
 
     ui->timeControl->setUpdateTarget(this);
     ui->historyWidget->setTarget(this);
+
+    setAcceptDrops(true);
 }
 
 SimulationWidget::~SimulationWidget()
@@ -26,24 +33,31 @@ SimulationWidget::~SimulationWidget()
     delete ui;
 }
 
-void SimulationWidget::addToSimulation(PhysicalObject *physical)
+void SimulationWidget::addToSimulation(SimulationGraphicObject *object)
 {
-    simulation.addSubject(physical);
+    addGraphicObject(object);
+    simulation.addSubject(object->getPhysical());
 }
 
 void SimulationWidget::addGraphicObject(GraphicObject *object)
 {
     graphicObjects.append(object);
+    saveCheckpoint();
+    updateGeometry();
 }
 
 void SimulationWidget::removeGraphicObject(GraphicObject *object)
 {
     graphicObjects.removeOne(object);
+    saveCheckpoint();
+    updateGeometry();
 }
 
 void SimulationWidget::clearScene()
 {
     graphicObjects.clear();
+    saveCheckpoint();
+    updateGeometry();
 }
 
 void SimulationWidget::applyTime(double dt)
@@ -127,6 +141,48 @@ void SimulationWidget::wheelEvent(QWheelEvent *event)
     QWidget::wheelEvent(event);
 }
 
+void SimulationWidget::dragEnterEvent(QDragEnterEvent *event)
+{
+    if (event->mimeData()->hasFormat("application/x-dnditemdata") &&
+            event->source())
+    {
+        event->setDropAction(Qt::MoveAction);
+        event->accept();
+    }
+    else
+    {
+        event->ignore();
+    }
+}
+
+void SimulationWidget::dropEvent(QDropEvent *event)
+{
+    if (event->mimeData()->hasFormat("application/x-dnditemdata"))
+    {
+        QByteArray itemData = event->mimeData()->data("application/x-dnditemdata");
+        GraphicObject *cpy = readDropData(itemData)->clone();
+        cpy->setPosition(event->pos());
+
+        SimulationGraphicObject* simGraphic = dynamic_cast<SimulationGraphicObject*>(cpy);
+
+        if(simGraphic)
+            addToSimulation(simGraphic);
+        else
+            addGraphicObject(cpy);
+    }
+
+    QWidget::dropEvent(event);
+}
+
+GraphicObject *SimulationWidget::readDropData(QByteArray &itemData)
+{
+    QDataStream dataStream(&itemData, QIODevice::ReadOnly);
+    GraphicObject *graphic;
+
+    dataStream.readRawData((char*)(&graphic), sizeof(graphic));
+    return graphic;
+}
+
 void SimulationWidget::saveCheckpoint()
 {
     saveToHistory();
@@ -138,18 +194,26 @@ void SimulationWidget::saveToHistory()
     ui->historyWidget->save(createState());
 }
 
+QPoint SimulationWidget::getContentCenter()
+{
+    QPoint center;
+
+    for(const auto& graphic : graphicObjects)
+        center += graphic->pos();
+    center /= graphicObjects.size();
+
+    return center;
+}
+
 void SimulationWidget::updateZoom(int zoom)
 {
-    scale = qMax(static_cast<qreal>(zoom) / 100.0, 0.05);
+    scale = qMax(static_cast<qreal>(zoom) / 100.0, 0.1);
     updateGeometry();
 }
 
 void SimulationWidget::fitToContent()
 {
-    int newZoom = scale * 100;
-
-    // TODO
-
-    ui->zoomWidget->setZoom(newZoom);
-    saveToHistory();
+    QPoint newTranslation = rect().center() - getContentCenter();
+    translation = newTranslation;
+    updateGeometry();
 }

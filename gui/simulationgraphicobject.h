@@ -20,6 +20,8 @@ public:
 
     virtual ~SimulationGraphicObject();
 
+    PhysicalObject *getPhysical() const;
+
     void setPosition(const QPoint &newPosition) override;
     QPoint pos() const override;
 

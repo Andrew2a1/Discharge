@@ -9,6 +9,7 @@
 #include "graphicobject.h"
 
 class SimulationWidgetState;
+class SimulationGraphicObject;
 
 namespace Ui {
 class SimulationWidget;
@@ -35,9 +36,9 @@ public:
     explicit SimulationWidget(QWidget *parent = nullptr);
     ~SimulationWidget();
 
-    void addToSimulation(PhysicalObject *physical);
-
+    void addToSimulation(SimulationGraphicObject *object);
     void addGraphicObject(GraphicObject *object);
+
     void removeGraphicObject(GraphicObject *object);
     void clearScene();
 
@@ -57,8 +58,14 @@ protected:
 
     void wheelEvent(QWheelEvent *event) override;
 
+    void dragEnterEvent(QDragEnterEvent *event) override;
+    void dropEvent(QDropEvent *event) override;
+
 private:
+    GraphicObject *readDropData(QByteArray &itemData);
+
     void saveToHistory();
+    QPoint getContentCenter();
 
 private slots:
     void updateZoom(int zoom);
