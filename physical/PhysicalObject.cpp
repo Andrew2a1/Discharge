@@ -3,6 +3,13 @@
 #include "PhysicalState.h"
 #include "PhysicalModifier.h"
 
+PhysicalObject::PhysicalObject(const PhysicalObject &other) :
+    PhysicalObject(other.getMass())
+{
+    setPosition(other.getPosition());
+    setVelocity(other.getVelocity());
+}
+
 PhysicalObject::PhysicalObject(double mass)
 {
     state = new PhysicalState;
@@ -14,6 +21,14 @@ PhysicalObject::~PhysicalObject()
 {
     delete state;
     clearModifiers();
+}
+
+void PhysicalObject::clearModifiers()
+{
+    for(auto &modifier: modifiers)
+        delete modifier;
+
+    modifiers.clear();
 }
 
 double PhysicalObject::getMass() const
@@ -54,14 +69,6 @@ void PhysicalObject::addModifier(PhysicalModifier *modifier)
 void PhysicalObject::removeModifier(PhysicalModifier *modifier)
 {
     modifiers.remove(modifier);
-}
-
-void PhysicalObject::clearModifiers()
-{
-    for(auto &modifier: modifiers)
-        delete modifier;
-    
-    modifiers.clear();
 }
 
 void PhysicalObject::applyTime(double dt)

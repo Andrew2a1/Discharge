@@ -14,6 +14,7 @@ private:
     std::list<PhysicalModifier*> modifiers;
 
 public:
+    PhysicalObject(const PhysicalObject &other);
     PhysicalObject(double mass = 1.0);
     virtual ~PhysicalObject();
 
