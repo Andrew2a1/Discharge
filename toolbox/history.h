@@ -1,13 +1,13 @@
 #ifndef HISTORY_H
 #define HISTORY_H
 
-#include <QList>
+#include <list>
 
 template<typename T>
 class History
 {
 private:
-    QList<T> history;
+    std::list<T> history;
     int currentIndex = -1;
     unsigned maxSize = 64;
 
@@ -48,22 +48,30 @@ public:
 
     const T& previous() {
         currentIndex -= 1;
-        return history[currentIndex];
+        return at(currentIndex);
     }
 
     const T& next() {
         currentIndex += 1;
-        return history[currentIndex];
+        return at(currentIndex);
     }
 
     const T& current() const {
-        return history[currentIndex];
+        return at(currentIndex);
     }
 
 private:
     void removeFirst() {
         history.pop_front();
-        currentIndex = history.size() ? std::max(currentIndex - 1, 0) : -1;
+        currentIndex -= 1;
+    }
+
+    const T& at(int idx) const {
+        int i = 0;
+        for(auto &item : history)
+            if(i++ == idx)
+                return item;
+        return history.front();
     }
 };
 
