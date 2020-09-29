@@ -2,6 +2,7 @@
 #include "testToolbox.h"
 
 #include "../physical/ElectricCharge.h"
+#include "../physical/PhysicalMemento.h"
 
 TEST_CASE("ElectricCharge setter test", "[ElectricCharge]")
 {
@@ -99,4 +100,6 @@ TEST_CASE("ElectricCharge memento", "[ElectricCharge]")
     CHECK(charge.getPosition() == Vector<>({1, 0, 1}));
     CHECK(charge.getVelocity() == Vector<>({2, 1, 1}));
     CHECK(charge.getCharge() == 2.0);
+
+    delete memento;
 }

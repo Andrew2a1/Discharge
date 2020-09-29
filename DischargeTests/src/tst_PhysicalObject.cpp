@@ -1,5 +1,6 @@
 #include "catch.hpp"
 #include "../physical/PhysicalObject.h"
+#include "../physical/PhysicalMemento.h"
 #include "testToolbox.h"
 
 TEST_CASE("PhysicalObject setter test", "[PhysicalObject]")
@@ -89,4 +90,6 @@ TEST_CASE("PhysicalObject memento", "[PhysicalObject]")
     CHECK(physical.getMass() == 3.25);
     CHECK(physical.getPosition() == Vector<>({1, 0, 1}));
     CHECK(physical.getVelocity() == Vector<>({2, 1, 1}));
+
+    delete memento;
 }
