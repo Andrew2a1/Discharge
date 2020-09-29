@@ -4,10 +4,12 @@ PROG_NAME = discharge_tests
 OUT_DIR = bin
 BUILD_DIR = build
 
-TESTS_SRC = src
-INCLUDE_DIRS = $(patsubst %, -I%, $(sort $(dir $(wildcard ../*/*.h)))) -Iinclude -I..
+WORK_DIRS = ../physical/ ../toolbox/
 
-SRC = $(wildcard ../*/*.cpp)
+TESTS_SRC = src
+INCLUDE_DIRS = $(patsubst %, -I%, $(WORK_DIRS)) -Iinclude -I..
+
+SRC = $(foreach dir, $(WORK_DIRS), $(wildcard $(dir)*.cpp))
 
 ifeq ($(OS),Windows_NT)
 	EXT = .exe
