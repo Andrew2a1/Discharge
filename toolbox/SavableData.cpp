@@ -1,6 +1,6 @@
 #include "SavableData.h"
 
-SavableData::SavableData(char* newData, unsigned length = 0) :
+SavableData::SavableData(char* newData, unsigned length) :
     data(newData),
     length(length)
 {

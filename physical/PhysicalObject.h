@@ -1,20 +1,16 @@
 #ifndef PHYSICALOBJECT_H
 #define PHYSICALOBJECT_H
 
-#include "PhysicalState.h"
-#include <list>
-
-class PhysicalMemento;
-class PhysicalModifier;
+#include "toolbox/vector.h"
 
 class PhysicalObject
 {
 private:
-    PhysicalState *state = nullptr;
-    std::list<PhysicalModifier*> modifiers;
+    double mass;
+    Vector<double> position;
+    Vector<double> velocity;
 
 public:
-    PhysicalObject(const PhysicalObject &other);
     PhysicalObject(double mass = 1.0);
     virtual ~PhysicalObject();
 
@@ -26,16 +22,9 @@ public:
     void setPosition(const Vector<double> &position);
     void setVelocity(const Vector<double> &velocity);
 
-    void addModifier(PhysicalModifier *modifier);
-    void removeModifier(PhysicalModifier *modifier);
-    void clearModifiers();
-
-    void applyTime(double dt);
-    void applyForce(const Vector<double> &force, double dt);
-    Vector<double> calculateForce(const PhysicalObject *other) const;
-
-    virtual PhysicalMemento *createMemento() const;
-    virtual void restoreMemento(const PhysicalMemento *memento);
+    virtual void applyTime(double dt);
+    virtual void applyForce(const Vector<double> &force, double dt);
+    virtual Vector<double> calculateForce(const PhysicalObject *other) const;
 };
 
 #endif // PHYSICALOBJECT_H

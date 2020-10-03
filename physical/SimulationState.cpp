@@ -1,5 +1,4 @@
 #include "SimulationState.h"
-#include "PhysicalMemento.h"
 #include "PhysicalObject.h"
 #include "Simulation.h"
 
@@ -18,8 +17,7 @@ SimulationState::~SimulationState()
 
 void SimulationState::addMementoFrom(PhysicalObject *object)
 {
-    ObjectMemento* memento = new ObjectMemento{object, object->createMemento()};
-    mementos.push_back(memento);
+    
 }
 
 void SimulationState::removeMemento(PhysicalObject *object)
@@ -49,22 +47,7 @@ void SimulationState::clear()
 
 void SimulationState::restoreState(Simulation *simulation)
 {
-    const std::list<PhysicalObject *> &subjects = simulation->getSubjects();
-
-    for(auto &subject : subjects)
-        if(!isObjectInMementos(subject))
-            simulation->removeSubject(subject);
-
-    for(auto &memento : mementos)
-    {
-        if(!containsPhysical(subjects, memento->object))
-        {
-            memento->object = new PhysicalObject;
-            simulation->addSubject(memento->object);
-        }
-
-        memento->object->restoreMemento(memento->memento);
-    }
+    
 }
 
 bool SimulationState::containsPhysical(const std::list<PhysicalObject *> &objects, const PhysicalObject *physical) const

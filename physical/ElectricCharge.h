@@ -14,8 +14,7 @@ public:
     double getCharge() const;
     void setCharge(double charge);
 
-    virtual PhysicalMemento *createMemento() const;
-    virtual void restoreMemento(const PhysicalMemento *memento);
+    virtual Vector<double> calculateForce(const PhysicalObject *other) const override;
 };
 
 #endif // ELECTRICCHARGE_H

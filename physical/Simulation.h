@@ -20,8 +20,8 @@ public:
     void clearSubjects();
     const std::list<PhysicalObject*> &getSubjects() const; 
 
-    SimulationState *saveState() const;
-    void restoreState(SimulationState *simulationState);
+    /*SimulationState *saveState() const;
+    void restoreState(SimulationState *simulationState);*/
 
 private:
     void applyForcesBetween(PhysicalObject *obj, PhysicalObject *other, double dt);

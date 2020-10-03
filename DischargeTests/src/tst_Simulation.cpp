@@ -26,7 +26,7 @@ TEST_CASE("Simulation applying time", "[Simulation]")
     CHECK_FALSE(obj->getPosition().almostEqual(Vector<>({0, 0, 0})));
     CHECK_FALSE(obj2->getPosition().almostEqual(Vector<>({1.4142, 1.4142, 0})));
 }
-
+/*
 TEST_CASE("Simulation save and restore state", "[Simulation]")
 {
     Simulation simulation;
@@ -51,4 +51,4 @@ TEST_CASE("Simulation save and restore state", "[Simulation]")
     CHECK(obj->getMass() == 2.0);
     CHECK(el->getCharge() == 1.0);
     CHECK(el2->getVelocity() == Vector<double>({0, 0, 0}));
-}
+}*/
