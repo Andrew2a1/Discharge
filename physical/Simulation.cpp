@@ -39,6 +39,11 @@ void Simulation::removeSubject(PhysicalObjectPtr subject)
     subjects.remove(subject);
 }
 
+const std::list<PhysicalObjectPtr> &Simulation::getSubjects() const
+{
+    return subjects;
+}
+
 SimulationState *Simulation::saveState() const
 {
     SimulationState *simulationState = new SimulationState();

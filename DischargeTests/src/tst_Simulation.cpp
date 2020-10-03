@@ -83,14 +83,16 @@ TEST_CASE("Simulation save and restore state", "[Simulation]")
 
         state = simulation.saveState();
 
+        simulation.addSubject(PhysicalObjectPtr(new PhysicalObject(50)));
+
         obj->setMass(50);
         el2->setVelocity(Vector<double>({10, 1, 1}));
 
         simulation.restoreState(state);
         delete state;
 
-        CHECK(obj->getMass() == 2.0);
         CHECK(el->getCharge() == 120);
+        CHECK(obj->getMass() == 2.0);
         CHECK(el2->getVelocity() == Vector<double>({0, 0, 0}));
     }
 }
