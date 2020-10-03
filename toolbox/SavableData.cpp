@@ -1,30 +1,32 @@
 #include "SavableData.h"
 
-SavableData::SavableData(char* newData, unsigned length) :
-    data(newData),
-    length(length)
+SavableData::SavableData(unsigned reserveSize)
 {
-
+    this->reserve(reserveSize);
 }
 
-SavableData::~SavableData()
+void SavableData::reserve(unsigned length)
 {
-    delete data;
+    data.reserve(length);
 }
 
-void SavableData::set(char* newData, unsigned newLength)
+void SavableData::add(const char *newData, unsigned size)
 {
-    delete data;
-    data = newData;
-    length = newLength;
+    for(unsigned i = 0; i < size; ++i)
+        data.push_back(newData[i]);
 }
 
-const char *SavableData::get() const
+const char *SavableData::getRaw(unsigned start) const
 {
-    return data;
+    return data.data() + start;
 }
 
 unsigned SavableData::size() const
 {
-    return length;
+    return data.size();
+}
+
+void SavableData::clear()
+{
+    data.clear();
 }

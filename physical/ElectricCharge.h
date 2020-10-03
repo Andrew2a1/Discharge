@@ -15,6 +15,9 @@ public:
     void setCharge(double charge);
 
     virtual Vector<double> calculateForce(const PhysicalObject *other) const override;
+
+    virtual SavableData* save() const override;
+    virtual unsigned restore(const SavableData *data) override;
 };
 
 #endif // ELECTRICCHARGE_H

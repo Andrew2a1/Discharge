@@ -1,15 +1,13 @@
 #include "PhysicalObject.h"
 #include "PhysicalConstants.h"
+#include "SavableData.h"
+
+#include <cstring>
 
 PhysicalObject::PhysicalObject(double mass) :
     mass(mass)
 {
 
-}
-
-PhysicalObject::~PhysicalObject()
-{
-    
 }
 
 double PhysicalObject::getMass() const
@@ -69,4 +67,40 @@ Vector<double> PhysicalObject::calculateForce(const PhysicalObject *other) const
 
     force *= getMass() * other->getMass() * G / std::pow(distance, 3);
     return force;
+}
+
+SavableData *PhysicalObject::save() const
+{
+    const unsigned total = sizeof(mass) + sizeof(position) + sizeof(velocity);
+    SavableData *savable = new SavableData(total);
+    Vector<double> *vect;
+
+    savable->add(PackObject(mass));
+
+    vect = new Vector<double>(position);
+    savable->add(PackObjectPtr(vect));
+
+    vect = new Vector<double>(velocity);
+    savable->add(PackObjectPtr(vect));
+
+    return savable;
+}
+
+unsigned PhysicalObject::restore(const SavableData *data)
+{
+    unsigned offset = 0;
+    const Vector<double> *vect;
+
+    std::memcpy(&mass, data->getRaw(), sizeof(mass));
+    offset += sizeof(mass);
+
+    vect = (const Vector<double> *)(data->getRaw(offset));
+    position = std::move(*vect);
+    offset += sizeof(position);
+
+    vect = (const Vector<double> *)(data->getRaw(offset));
+    velocity = std::move(*vect);
+    offset += sizeof(velocity);
+
+    return offset;
 }

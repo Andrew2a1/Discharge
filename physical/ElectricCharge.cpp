@@ -1,5 +1,6 @@
 #include "ElectricCharge.h"
 #include "PhysicalConstants.h"
+#include "SavableData.h"
 
 ElectricCharge::ElectricCharge(double mass, double charge) :
     PhysicalObject(mass),
@@ -33,4 +34,21 @@ Vector<double> ElectricCharge::calculateForce(const PhysicalObject *other) const
     }
 
     return force + PhysicalObject::calculateForce(other);
+}
+
+SavableData *ElectricCharge::save() const 
+{
+    SavableData *savable = PhysicalObject::save();
+    savable->add(PackObject(charge));
+    return savable;
+}
+
+unsigned ElectricCharge::restore(const SavableData *data)
+{
+    unsigned offset = PhysicalObject::restore(data);
+
+    std::memcpy(&charge, data->getRaw(offset), sizeof(charge));
+    offset += sizeof(charge);
+
+    return offset;
 }

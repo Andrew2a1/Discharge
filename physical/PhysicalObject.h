@@ -2,8 +2,9 @@
 #define PHYSICALOBJECT_H
 
 #include "toolbox/vector.h"
+#include "toolbox/Savable.h"
 
-class PhysicalObject
+class PhysicalObject : public Savable
 {
 private:
     double mass;
@@ -12,7 +13,7 @@ private:
 
 public:
     PhysicalObject(double mass = 1.0);
-    virtual ~PhysicalObject();
+    virtual ~PhysicalObject() = default;
 
     double getMass() const;
     const Vector<double> &getPosition() const;
@@ -25,6 +26,9 @@ public:
     virtual void applyTime(double dt);
     virtual void applyForce(const Vector<double> &force, double dt);
     virtual Vector<double> calculateForce(const PhysicalObject *other) const;
+
+    virtual SavableData* save() const override;
+    virtual unsigned restore(const SavableData *data) override;
 };
 
 #endif // PHYSICALOBJECT_H

@@ -1,20 +1,25 @@
 #ifndef SAVABLE_DATA_H
 #define SAVABLE_DATA_H
 
+#include <vector>
+
+#define PackObject(obj) (const char*)((&obj)), (sizeof((obj)))
+#define PackObjectPtr(obj) (const char*)((obj)), (sizeof(*(obj)))
+
 class SavableData
 {
 private:
-    char *data;
-    unsigned length;
+    std::vector<char> data;
 
 public:
-    SavableData(char* newData = nullptr, unsigned length = 0);
-    virtual ~SavableData();
+    SavableData(unsigned reserveSize = 0);
+    void reserve(unsigned length);
 
-    void set(char* newData, unsigned newLength);
-    const char *get() const;
-
+    void add(const char *newData, unsigned size);
+    const char *getRaw(unsigned start = 0) const;
+    
     unsigned size() const;
+    void clear();
 };
 
 

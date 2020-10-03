@@ -7,7 +7,7 @@ class Savable
 {
 public:
     virtual SavableData* save() const = 0;
-    virtual void restore(const SavableData *data) = 0;
+    virtual unsigned restore(const SavableData *data) = 0;
 };
 
 #endif // SAVABLE_H
