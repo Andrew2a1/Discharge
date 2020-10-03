@@ -1,37 +1,28 @@
 #if !defined(SIMULATION_STATE_H)
 #define SIMULATION_STATE_H
 
+#include <map>
 #include <list>
+#include "PhysicalObjectPtr.h"
 
-class PhysicalMemento;
-class PhysicalObject;
-class Simulation;
-
-struct ObjectMemento {
-    PhysicalObject *object;
-    PhysicalMemento *memento;
-};
+class SavableData;
 
 class SimulationState
 {
 private:
-    std::list<ObjectMemento*> mementos;
+    std::map<PhysicalObjectPtr, SavableData*> saved;
 
 public:
-    SimulationState(const std::list<PhysicalObject*> &subjects);
     ~SimulationState();
 
-    void addMementoFrom(PhysicalObject *object);
-    void removeMemento(PhysicalObject *object);
+    void saveObject(PhysicalObjectPtr object);
+    void removeObject(PhysicalObjectPtr object);
     void clear();
 
-    void restoreState(Simulation *simulation);
-
-private:
-    bool containsPhysical(const std::list<PhysicalObject *> &objects,
-                          const PhysicalObject* physical) const;
-
-    bool isObjectInMementos(const PhysicalObject* physical) const;
+    SavableData* getData(PhysicalObjectPtr object);
+    std::list<PhysicalObjectPtr> getSaved() const;
+    
+    bool isSaved(PhysicalObjectPtr object);
 };
 
 #endif // SIMULATION_STATE_H
