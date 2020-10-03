@@ -35,8 +35,8 @@ SimulationWidget::~SimulationWidget()
 
 void SimulationWidget::addToSimulation(SimulationGraphicObject *object)
 {
-    addGraphicObject(object);
     simulation.addSubject(object->getPhysical());
+    addGraphicObject(object);
 }
 
 void SimulationWidget::addGraphicObject(GraphicObject *object)

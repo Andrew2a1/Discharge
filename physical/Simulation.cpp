@@ -4,8 +4,7 @@
 
 Simulation::~Simulation()
 {
-    for(auto &subject : subjects)
-        delete subject;
+    clearSubjects();
 }
 
 void Simulation::applyTime(double dt)
@@ -42,10 +41,14 @@ void Simulation::addSubject(PhysicalObject *subject)
 void Simulation::removeSubject(PhysicalObject *subject)
 {
     subjects.remove(subject);
+    delete subject;
 }
 
 void Simulation::clearSubjects()
 {
+    for(auto &subject : subjects)
+        delete subject;
+
     subjects.clear();
 }
 
@@ -62,5 +65,5 @@ SimulationState *Simulation::saveState() const
 
 void Simulation::restoreState(SimulationState *simulationState)
 {
-    simulationState->restoreState();
+    simulationState->restoreState(this);
 }
