@@ -1,12 +1,6 @@
 #include "graphicobject.h"
 #include <QRect>
 
-GraphicObject::GraphicObject(QObject *parent) :
-    QObject(parent)
-{
-
-}
-
 void GraphicObject::setPosition(const QPoint &newPosition)
 {
     Q_UNUSED(newPosition);
@@ -29,7 +23,7 @@ void GraphicObject::draw(QPainter *painter)
 
 GraphicObject *GraphicObject::clone() const
 {
-    GraphicObject *cpy = new GraphicObject(parent());
+    GraphicObject *cpy = new GraphicObject;
     cpy->setPosition(this->pos());
     return cpy;
 }

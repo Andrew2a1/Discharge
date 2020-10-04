@@ -2,36 +2,18 @@
 #include "physical/PhysicalObject.h"
 #include <QPainter>
 
-SimulationGraphicObject::SimulationGraphicObject(PhysicalObject *physicalObject,
-                                                 QObject *parent) :
-    GraphicObject(parent),
-    physical(physicalObject)
-{
-
-}
-
-SimulationGraphicObject::~SimulationGraphicObject()
-{
-    delete physical;
-}
-
-PhysicalObject *SimulationGraphicObject::getPhysical() const
-{
-    return physical;
-}
-
 void SimulationGraphicObject::setPosition(const QPoint &newPosition)
 {
     Vector<double> position(2);
     position[0] = newPosition.x();
     position[1] = newPosition.y();
 
-    physical->setPosition(position);
+    getPhysical()->setPosition(position);
 }
 
 QPoint SimulationGraphicObject::pos() const
 {
-    const Vector<double> &position = physical->getPosition();
+    const Vector<double> &position = getPhysical()->getPosition();
     return QPoint(position[0], position[1]);
 }
 
@@ -48,8 +30,3 @@ void SimulationGraphicObject::draw(QPainter *painter)
     painter->drawText(getBounds(), Qt::AlignCenter ,"m");
 }
 
-GraphicObject *SimulationGraphicObject::clone() const
-{
-    PhysicalObject *cpy = new PhysicalObject(*physical);
-    return new SimulationGraphicObject(cpy, parent());
-}

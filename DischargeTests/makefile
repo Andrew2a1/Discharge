@@ -1,4 +1,5 @@
 CC = g++
+CXXFLAGS=-g -std=c++11 -Wall -pedantic
 PROG_NAME = discharge_tests
 
 OUT_DIR = bin
@@ -23,13 +24,13 @@ FILES = $(notdir $(wildcard $(TESTS_SRC)/*.cpp) $(SRC))
 OBJS = $(foreach file,$(subst .cpp,.o,$(FILES)),$(BUILD_DIR)/$(file))
 
 all: build_dirs $(OBJS)
-	$(CC) -g $(INCLUDE_DIRS) -o $(OUT) $(OBJS)
+	$(CC) $(CXXFLAGS) $(INCLUDE_DIRS) -o $(OUT) $(OBJS)
 
 $(BUILD_DIR)/%.o: $(TESTS_SRC)/%.cpp
-	$(CC) -g $(INCLUDE_DIRS) -c $< -o $@
+	$(CC) $(CXXFLAGS) $(INCLUDE_DIRS) -c $< -o $@
 
 $(BUILD_DIR)/%.o: ../*/%.cpp
-	$(CC) -g $(INCLUDE_DIRS) -c $< -o $@
+	$(CC) $(CXXFLAGS) $(INCLUDE_DIRS) -c $< -o $@
 
 build_dirs:
 	-mkdir $(BUILD_DIR)

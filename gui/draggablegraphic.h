@@ -16,10 +16,11 @@ private:
     QLabel *preview;
     QPixmap pixmap;
 
-
 public:
     explicit DraggableGraphic(GraphicObject *graphic,
                               QWidget *parent = nullptr);
+
+    ~DraggableGraphic();
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;

@@ -1,108 +1,116 @@
 #include "PhysicalObject.h"
-#include "PhysicalMemento.h"
-#include "PhysicalState.h"
-#include "PhysicalModifier.h"
+#include "PhysicalConstants.h"
+#include "toolbox/SavableData.h"
 
-PhysicalObject::PhysicalObject(const PhysicalObject &other) :
-    PhysicalObject(other.getMass())
+#include <cstring>
+
+PhysicalObject::PhysicalObject(double mass) :
+    mass(mass)
 {
-    setPosition(other.getPosition());
-    setVelocity(other.getVelocity());
-}
 
-PhysicalObject::PhysicalObject(double mass)
-{
-    state = new PhysicalState;
-    addModifier(new PhysicalModifier);
-    setMass(mass);
-}
-
-PhysicalObject::~PhysicalObject()
-{
-    delete state;
-    clearModifiers();
-}
-
-void PhysicalObject::clearModifiers()
-{
-    for(auto &modifier: modifiers)
-        delete modifier;
-
-    modifiers.clear();
 }
 
 double PhysicalObject::getMass() const
 {
-    return state->mass;
+    return this->mass;
 }
 
 const Vector<double> &PhysicalObject::getPosition() const
 {
-    return state->position;
+    return this->position;
 }
 
 const Vector<double> &PhysicalObject::getVelocity() const
 {
-    return state->velocity;
+    return this->velocity;
 }
 
 void PhysicalObject::setMass(double mass)
 {
-    state->mass = mass;
+    this->mass = mass;
 }
 
 void PhysicalObject::setPosition(const Vector<double> &position)
 {
-    state->position = position;
+    this->position = position;
 }
 
 void PhysicalObject::setVelocity(const Vector<double> &velocity)
 {
-    state->velocity = velocity;
-}
-
-void PhysicalObject::addModifier(PhysicalModifier *modifier)
-{
-    modifiers.push_back(modifier);
-}
-
-void PhysicalObject::removeModifier(PhysicalModifier *modifier)
-{
-    modifiers.remove(modifier);
+    this->velocity = velocity;
 }
 
 void PhysicalObject::applyTime(double dt)
 {
-    for(auto &modifier: modifiers)
-        modifier->applyTime(this, dt);
+    Vector<double> pos = getPosition();
+    pos += getVelocity() * dt;
+    setPosition(pos);
 }
 
 void PhysicalObject::applyForce(const Vector<double> &force, double dt)
 {
-    for(auto &modifier: modifiers)
-        modifier->applyForce(this, force, dt);
+    Vector<double> v = getVelocity();
+    Vector<double> s = getPosition();
+    const Vector<double> dv = force / getMass() *dt;
+
+    s += v*dt + dv*dt/2;
+    v += dv;
+
+    setPosition(s);
+    setVelocity(v);
 }
 
 Vector<double> PhysicalObject::calculateForce(const PhysicalObject *other) const
 {
-    Vector<double> force(getPosition().size());
+    Vector<double> force = other->getPosition() - getPosition();
+    double distance = force.abs();
 
-    for(auto &modifier: modifiers)
-        force += modifier->calculateForce(this, other);
-
+    force *= getMass() * other->getMass() * G / std::pow(distance, 3);
     return force;
 }
 
-PhysicalMemento *PhysicalObject::createMemento() const
+SavableData *PhysicalObject::save() const
 {
-    PhysicalMemento *memento = new PhysicalMemento();
-    PhysicalState *current = new PhysicalState(*state);
+    const unsigned total = sizeof(mass) + sizeof(position) + sizeof(velocity);
+    SavableData *savable = new SavableData(total);
 
-    memento->setState(current);
-    return memento;
+    savable->add(PackObject(mass));
+    saveVector(position, savable);
+    saveVector(velocity, savable);
+
+    return savable;
 }
 
-void PhysicalObject::restoreMemento(const PhysicalMemento *memento)
+unsigned PhysicalObject::restore(const SavableData *data)
 {
-    *state = *memento->getState();
+    unsigned offset = 0;
+
+    std::memcpy(&mass, data->getRaw(), sizeof(mass));
+    offset += sizeof(mass);
+
+    position = restoreVector(data, offset);
+    velocity = restoreVector(data, offset);
+    return offset;
+}
+
+void PhysicalObject::saveVector(const Vector<double> &vect, SavableData *savable) const
+{
+    savable->add(vect.size());
+
+    for(int i = 0; i < vect.size(); ++i)
+        savable->add(PackObject(vect[i]));
+}
+
+Vector<double> PhysicalObject::restoreVector(const SavableData *savable, unsigned &offset) const
+{
+    Vector<double> result(*savable->getRaw(offset));
+    offset += 1;
+
+    for(int i = 0; i < velocity.size(); ++i)
+    {
+        result[i] = *(double*)(savable->getRaw(offset));
+        offset += sizeof(double);
+    }
+
+    return result;
 }

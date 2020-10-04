@@ -1,22 +1,19 @@
 #ifndef PHYSICALOBJECT_H
 #define PHYSICALOBJECT_H
 
-#include "PhysicalState.h"
-#include <list>
+#include "toolbox/vector.h"
+#include "toolbox/Savable.h"
 
-class PhysicalMemento;
-class PhysicalModifier;
-
-class PhysicalObject
+class PhysicalObject : public Savable
 {
 private:
-    PhysicalState *state = nullptr;
-    std::list<PhysicalModifier*> modifiers;
+    double mass;
+    Vector<double> position;
+    Vector<double> velocity;
 
 public:
-    PhysicalObject(const PhysicalObject &other);
     PhysicalObject(double mass = 1.0);
-    virtual ~PhysicalObject();
+    virtual ~PhysicalObject() = default;
 
     double getMass() const;
     const Vector<double> &getPosition() const;
@@ -26,16 +23,16 @@ public:
     void setPosition(const Vector<double> &position);
     void setVelocity(const Vector<double> &velocity);
 
-    void addModifier(PhysicalModifier *modifier);
-    void removeModifier(PhysicalModifier *modifier);
-    void clearModifiers();
+    virtual void applyTime(double dt);
+    virtual void applyForce(const Vector<double> &force, double dt);
+    virtual Vector<double> calculateForce(const PhysicalObject *other) const;
 
-    void applyTime(double dt);
-    void applyForce(const Vector<double> &force, double dt);
-    Vector<double> calculateForce(const PhysicalObject *other) const;
+    virtual SavableData* save() const override;
+    virtual unsigned restore(const SavableData *data) override;
 
-    virtual PhysicalMemento *createMemento() const;
-    virtual void restoreMemento(const PhysicalMemento *memento);
+private:
+    void saveVector(const Vector<double> &vect, SavableData *savable) const;
+    Vector<double> restoreVector(const SavableData *savable, unsigned &offset) const;
 };
 
 #endif // PHYSICALOBJECT_H

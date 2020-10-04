@@ -2,9 +2,9 @@
 #include "PhysicalObject.h"
 #include "SimulationState.h"
 
-Simulation::~Simulation()
+void Simulation::clearSubjects()
 {
-    clearSubjects();
+    subjects.clear();
 }
 
 void Simulation::applyTime(double dt)
@@ -16,54 +16,62 @@ void Simulation::applyTime(double dt)
     }
 
     for(auto &subject : subjects)
-    {
         for(auto &other : subjects)
-        {
-            if(subject != other)
-            {
-                applyForcesBetween(subject, other, dt);
-            }
-        }
+            applyForcesBetween(subject, other, dt);
+}
+
+void Simulation::applyForcesBetween(PhysicalObjectPtr obj, PhysicalObjectPtr other, double dt)
+{
+    if(obj != other)
+    {
+        const Vector<double> force = obj->calculateForce(other.get());
+        obj->applyForce(force, dt);
     }
 }
 
-void Simulation::applyForcesBetween(PhysicalObject *obj, PhysicalObject *other, double dt)
-{
-    const Vector<double> force = obj->calculateForce(other);
-    obj->applyForce(force, dt);
-}
-
-void Simulation::addSubject(PhysicalObject *subject)
+void Simulation::addSubject(PhysicalObjectPtr subject)
 {
     subjects.push_back(subject);
 }
 
-void Simulation::removeSubject(PhysicalObject *subject)
+void Simulation::removeSubject(PhysicalObjectPtr subject)
 {
     subjects.remove(subject);
-    delete subject;
 }
 
-void Simulation::clearSubjects()
-{
-    for(auto &subject : subjects)
-        delete subject;
-
-    subjects.clear();
-}
-
-const std::list<PhysicalObject *> &Simulation::getSubjects() const
+const std::list<PhysicalObjectPtr> &Simulation::getSubjects() const
 {
     return subjects;
 }
 
 SimulationState *Simulation::saveState() const
 {
-    SimulationState *simulationState = new SimulationState(subjects);
+    SimulationState *simulationState = new SimulationState();
+
+    for(const auto& subject: subjects)
+        simulationState->saveObject(subject);
+    
     return simulationState;
 }
 
-void Simulation::restoreState(SimulationState *simulationState)
+void Simulation::restoreState(SimulationState * simulationState)
 {
-    simulationState->restoreState(this);
+    std::list<PhysicalObjectPtr> savedObjects = simulationState->getSaved();
+
+    for (const auto &subject : subjects)
+    {
+        if (simulationState->isSaved(subject))
+            subject->restore(simulationState->getData(subject));
+        else
+            removeSubject(subject);
+    }
+
+    for(const auto &saved : savedObjects)
+    {
+        if(std::find(subjects.begin(), subjects.end(), saved) == subjects.end())
+        {
+            saved->restore(simulationState->getData(saved));
+            addSubject(saved);
+        }    
+    }
 }

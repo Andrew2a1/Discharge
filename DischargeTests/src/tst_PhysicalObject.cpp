@@ -1,7 +1,8 @@
 #include "catch.hpp"
-#include "../physical/PhysicalObject.h"
-#include "../physical/PhysicalMemento.h"
 #include "testToolbox.h"
+
+#include "physical/PhysicalObject.h"
+#include "toolbox/SavableData.h"
 
 TEST_CASE("PhysicalObject setter test", "[PhysicalObject]")
 {
@@ -71,25 +72,26 @@ TEST_CASE("PhysicalObject calculate force", "[PhysicalObject]")
     CHECK(physical1.calculateForce(&physical2).round(0.1) == Vector<>({11.8, 11.8, 0}));
 }
 
-TEST_CASE("PhysicalObject memento", "[PhysicalObject]")
+TEST_CASE("PhysicalObject save and restore state", "[PhysicalObject]")
 {
     PhysicalObject physical(1.0);
-    PhysicalMemento *memento;
+    SavableData *physicalData;
 
     physical.setMass(3.25);
     physical.setPosition(Vector<>({1, 0, 1}));
     physical.setVelocity(Vector<>({2, 1, 1}));
 
-    memento = physical.createMemento();
+    physicalData = physical.save();
 
     physical.setMass(20);
     physical.setPosition(Vector<>({50, 0, 1}));
+    physical.setVelocity(Vector<>({-1, 0, 1}));
 
-    physical.restoreMemento(memento);
+    physical.restore(physicalData);
     
     CHECK(physical.getMass() == 3.25);
     CHECK(physical.getPosition() == Vector<>({1, 0, 1}));
     CHECK(physical.getVelocity() == Vector<>({2, 1, 1}));
 
-    delete memento;
+    delete physicalData;
 }

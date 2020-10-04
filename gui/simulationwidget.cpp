@@ -1,8 +1,7 @@
 #include "simulationwidget.h"
 #include "ui_simulationwidget.h"
 
-#include "simulationwidgetstate.h"
-#include "simulationgraphicobject.h"
+#include "physicalgraphicobject.h"
 
 #include <QPainter>
 #include <QMouseEvent>
@@ -33,20 +32,20 @@ SimulationWidget::~SimulationWidget()
     delete ui;
 }
 
-void SimulationWidget::addToSimulation(SimulationGraphicObject *object)
+void SimulationWidget::addToSimulation(PhysicalObjectPtr physical, GraphicObjectPtr graphic)
 {
-    simulation.addSubject(object->getPhysical());
-    addGraphicObject(object);
+    simulation.addSubject(physical);
+    addGraphicObject(graphic);
 }
 
-void SimulationWidget::addGraphicObject(GraphicObject *object)
+void SimulationWidget::addGraphicObject(GraphicObjectPtr object)
 {
     graphicObjects.append(object);
     saveCheckpoint();
     updateGeometry();
 }
 
-void SimulationWidget::removeGraphicObject(GraphicObject *object)
+void SimulationWidget::removeGraphicObject(GraphicObjectPtr object)
 {
     graphicObjects.removeOne(object);
     saveCheckpoint();
@@ -66,18 +65,18 @@ void SimulationWidget::applyTime(double dt)
     updateGeometry();
 }
 
-SimulationWidgetState *SimulationWidget::createState()
+SimulationWidgetStatePtr SimulationWidget::createState()
 {
-    SimulationWidgetState *widgetState = new SimulationWidgetState(this);
-    widgetState->simState = simulation.saveState();
-    widgetState->graphicObjects = graphicObjects;
+    SimulationWidgetStatePtr widgetState(new SimulationWidgetState);
+    widgetState->setState(simulation.saveState());
+    widgetState->setGraphicObjects(graphicObjects);
     return widgetState;
 }
 
-void SimulationWidget::restoreState(SimulationWidgetState *state)
+void SimulationWidget::restoreState(SimulationWidgetStatePtr state)
 {
-    simulation.restoreState(state->simState);
-    graphicObjects = state->graphicObjects;
+    simulation.restoreState(state->state());
+    graphicObjects = state->getGraphicObjects();
 }
 
 void SimulationWidget::paintEvent(QPaintEvent *event)
@@ -160,15 +159,15 @@ void SimulationWidget::dropEvent(QDropEvent *event)
     if (event->mimeData()->hasFormat("application/x-dnditemdata"))
     {
         QByteArray itemData = event->mimeData()->data("application/x-dnditemdata");
-        GraphicObject *cpy = readDropData(itemData)->clone();
-        cpy->setPosition(event->pos());
+        GraphicObjectPtr clone(readDropData(itemData)->clone());
+        clone->setPosition(event->pos()/scale - translation);
 
-        SimulationGraphicObject* simGraphic = dynamic_cast<SimulationGraphicObject*>(cpy);
+        SimulationGraphicObject* simGraphic = dynamic_cast<SimulationGraphicObject*>(clone.get());
 
         if(simGraphic)
-            addToSimulation(simGraphic);
+            addToSimulation(simGraphic->getPhysical(), clone);
         else
-            addGraphicObject(cpy);
+            addGraphicObject(clone);
     }
 
     QWidget::dropEvent(event);

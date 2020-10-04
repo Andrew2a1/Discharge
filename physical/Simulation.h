@@ -2,6 +2,7 @@
 #define SIMULATION_H
 
 #include <list>
+#include "PhysicalObjectPtr.h"
 
 class PhysicalObject;
 class SimulationState;
@@ -9,22 +10,22 @@ class SimulationState;
 class Simulation
 {
 private:
-    std::list<PhysicalObject*> subjects;
+    std::list<PhysicalObjectPtr> subjects;
 
 public:
-    ~Simulation();
     void applyTime(double dt);
 
-    void addSubject(PhysicalObject *subject);
-    void removeSubject(PhysicalObject *subject);
+    void addSubject(PhysicalObjectPtr subject);
+    void removeSubject(PhysicalObjectPtr subject);
     void clearSubjects();
-    const std::list<PhysicalObject*> &getSubjects() const; 
+
+    const std::list<PhysicalObjectPtr>& getSubjects() const;
 
     SimulationState *saveState() const;
     void restoreState(SimulationState *simulationState);
 
 private:
-    void applyForcesBetween(PhysicalObject *obj, PhysicalObject *other, double dt);
+    void applyForcesBetween(PhysicalObjectPtr obj, PhysicalObjectPtr other, double dt);
 };
 
 #endif // SIMULATION_H

@@ -2,9 +2,9 @@
 #define TIMECONTROLWIDGET_H
 
 #include <QWidget>
+#include "simulationwidgetstate.h"
 
 class SimulationWidget;
-class SimulationWidgetState;
 
 namespace Ui {
 class TimeControlWidget;
@@ -14,12 +14,11 @@ class TimeControlWidget : public QWidget
 {
     Q_OBJECT
 
-
 private:
     Ui::TimeControlWidget *ui;
 
     SimulationWidget *updateTarget = nullptr;
-    SimulationWidgetState *checkpoint = nullptr;
+    SimulationWidgetStatePtr checkpoint = nullptr;
 
     QTimer *timer;
 
@@ -31,7 +30,7 @@ public:
     ~TimeControlWidget();
 
     void setUpdateTarget(SimulationWidget *target);
-    void setCheckpoint(SimulationWidgetState *newCheckpoint);
+    void setCheckpoint(SimulationWidgetStatePtr newCheckpoint);
     int getSimApplyTime();
 
 public slots:

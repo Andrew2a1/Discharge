@@ -1,13 +1,12 @@
 #include "ElectricCharge.h"
-#include "ChargeModifier.h"
-#include "ChargeState.h"
-#include "PhysicalMemento.h"
+#include "PhysicalConstants.h"
+#include "toolbox/SavableData.h"
 
 ElectricCharge::ElectricCharge(double mass, double charge) :
     PhysicalObject(mass),
     charge(charge)
 {
-    addModifier(new ChargeModifier);
+
 }
 
 double ElectricCharge::getCharge() const
@@ -20,26 +19,36 @@ void ElectricCharge::setCharge(double charge)
     this->charge = charge;
 }
 
-PhysicalMemento *ElectricCharge::createMemento() const
+Vector<double> ElectricCharge::calculateForce(const PhysicalObject *other) const
 {
-    PhysicalMemento *memento = new PhysicalMemento();
-    ChargeState *current = new ChargeState;
+    Vector<double> force(getPosition().size());
+    const ElectricCharge *electrostatic = dynamic_cast<const ElectricCharge*>(other);
 
-    current->mass = getMass();
-    current->position = getPosition();
-    current->velocity = getVelocity();
-    current->charge = getCharge();
+    if(electrostatic)
+    {
+        force = other->getPosition() - getPosition();
+        const double distance = force.abs();
 
-    memento->setState(current);
-    return memento;
+        force *= -(getCharge() * electrostatic->getCharge()) /
+                 (4 * PI * e0 * std::pow(distance, 3));
+    }
+
+    return force + PhysicalObject::calculateForce(other);
 }
 
-void ElectricCharge::restoreMemento(const PhysicalMemento *memento)
+SavableData *ElectricCharge::save() const 
 {
-    ChargeState* charge_state = dynamic_cast<ChargeState*>(memento->getState());
+    SavableData *savable = PhysicalObject::save();
+    savable->add(PackObject(charge));
+    return savable;
+}
 
-    if(charge_state)
-        setCharge(charge_state->charge);
+unsigned ElectricCharge::restore(const SavableData *data)
+{
+    unsigned offset = PhysicalObject::restore(data);
 
-    PhysicalObject::restoreMemento(memento);
+    std::memcpy(&charge, data->getRaw(offset), sizeof(charge));
+    offset += sizeof(charge);
+
+    return offset;
 }

@@ -33,7 +33,7 @@ void TimeControlWidget::setUpdateTarget(SimulationWidget *target)
     updateTarget = target;
 }
 
-void TimeControlWidget::setCheckpoint(SimulationWidgetState *newCheckpoint)
+void TimeControlWidget::setCheckpoint(SimulationWidgetStatePtr newCheckpoint)
 {
     checkpoint = newCheckpoint;
 }

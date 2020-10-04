@@ -1,82 +1,47 @@
 #include "SimulationState.h"
-#include "PhysicalMemento.h"
 #include "PhysicalObject.h"
-#include "Simulation.h"
-
-#include <algorithm>
-
-SimulationState::SimulationState(const std::list<PhysicalObject*> &subjects)
-{
-    for(const auto &subject : subjects)
-        addMementoFrom(subject);
-}
+#include "toolbox/SavableData.h"
 
 SimulationState::~SimulationState()
 {
     clear();
 }
 
-void SimulationState::addMementoFrom(PhysicalObject *object)
-{
-    ObjectMemento* memento = new ObjectMemento{object, object->createMemento()};
-    mementos.push_back(memento);
-}
-
-void SimulationState::removeMemento(PhysicalObject *object)
-{
-    for(auto &memento : mementos)
-    {
-        if(memento->object == object)
-        {
-            mementos.remove(memento);
-
-            delete memento->memento;
-            delete memento;
-        } 
-    }  
-}
-
 void SimulationState::clear()
 {
-    for(auto &memento : mementos)
-    {
-        delete memento->memento;
-        delete memento;
-    }  
+    for(const auto &item : saved)
+        delete saved[item.first];
 
-    mementos.clear();
+    saved.clear();
 }
 
-void SimulationState::restoreState(Simulation *simulation)
+void SimulationState::saveObject(PhysicalObjectPtr object)
 {
-    const std::list<PhysicalObject *> &subjects = simulation->getSubjects();
-
-    for(auto &subject : subjects)
-        if(!isObjectInMementos(subject))
-            simulation->removeSubject(subject);
-
-    for(auto &memento : mementos)
-    {
-        if(!containsPhysical(subjects, memento->object))
-        {
-            memento->object = new PhysicalObject;
-            simulation->addSubject(memento->object);
-        }
-
-        memento->object->restoreMemento(memento->memento);
-    }
+    saved[object] = object->save();
 }
 
-bool SimulationState::containsPhysical(const std::list<PhysicalObject *> &objects, const PhysicalObject *physical) const
+void SimulationState::removeObject(PhysicalObjectPtr object)
 {
-    return std::find(objects.begin(), objects.end(), physical) != objects.end();
+    delete saved[object];
+    saved.erase(object);
 }
 
-bool SimulationState::isObjectInMementos(const PhysicalObject *physical) const
+SavableData *SimulationState::getData(PhysicalObjectPtr object)
 {
-    for(auto &memento : mementos)
-        if(memento->object == physical)
-            return true;
+    return saved[object];
+}
 
-    return false;
+std::list<PhysicalObjectPtr> SimulationState::getSaved() const
+{
+    std::list<PhysicalObjectPtr> objects;
+
+    for(const auto &key : saved)
+        objects.push_back(key.first);
+
+    return objects;
+}
+
+bool SimulationState::isSaved(PhysicalObjectPtr object)
+{
+    return saved.find(object) != saved.end();
 }

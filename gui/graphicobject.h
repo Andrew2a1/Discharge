@@ -1,16 +1,17 @@
 #ifndef GRAPHICOBJECT_H
 #define GRAPHICOBJECT_H
 
-#include <QObject>
+class QPoint;
+class QRect;
+
+#include <memory>
 
 class QPainter;
 
-class GraphicObject : public QObject
+class GraphicObject
 {
-    Q_OBJECT  
-
 public:
-    explicit GraphicObject(QObject *parent = nullptr);
+    virtual ~GraphicObject() = default;
 
     virtual void setPosition(const QPoint &newPosition);
     virtual QPoint pos() const;
@@ -22,5 +23,7 @@ public:
 
     bool covers(const QPoint &point);
 };
+
+typedef std::shared_ptr<GraphicObject> GraphicObjectPtr;
 
 #endif // GRAPHICOBJECT_H
