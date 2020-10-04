@@ -23,6 +23,11 @@ DraggableGraphic::DraggableGraphic(GraphicObject *graphic, QWidget *parent) :
     createLayout();
 }
 
+DraggableGraphic::~DraggableGraphic()
+{
+    delete graphic;
+}
+
 void DraggableGraphic::createPixmap()
 {
     QPainter painter(&pixmap);
@@ -49,7 +54,7 @@ void DraggableGraphic::mousePressEvent(QMouseEvent *event)
     QDrag *drag = new QDrag(this);
     drag->setMimeData(mimeData);
     drag->setPixmap(pixmap);
-    drag->setHotSpot(event->pos() - pos());
+    drag->setHotSpot(event->pos());
     drag->start();
 }
 
@@ -57,6 +62,8 @@ QByteArray DraggableGraphic::getDraggableData()
 {
     QByteArray itemData;
     QDataStream dataStream(&itemData, QIODevice::WriteOnly);
+
+    // Send pointer to graphic object
     dataStream.writeRawData((char*)(&graphic), sizeof(graphic));
 
     return itemData;
