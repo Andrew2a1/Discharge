@@ -1,6 +1,6 @@
 #include "PhysicalObject.h"
 #include "PhysicalConstants.h"
-#include "SavableData.h"
+#include "toolbox/SavableData.h"
 
 #include <cstring>
 
@@ -73,15 +73,10 @@ SavableData *PhysicalObject::save() const
 {
     const unsigned total = sizeof(mass) + sizeof(position) + sizeof(velocity);
     SavableData *savable = new SavableData(total);
-    Vector<double> *vect;
 
     savable->add(PackObject(mass));
-
-    vect = new Vector<double>(position);
-    savable->add(PackObjectPtr(vect));
-
-    vect = new Vector<double>(velocity);
-    savable->add(PackObjectPtr(vect));
+    saveVector(position, savable);
+    saveVector(velocity, savable);
 
     return savable;
 }
@@ -89,18 +84,33 @@ SavableData *PhysicalObject::save() const
 unsigned PhysicalObject::restore(const SavableData *data)
 {
     unsigned offset = 0;
-    const Vector<double> *vect;
 
     std::memcpy(&mass, data->getRaw(), sizeof(mass));
     offset += sizeof(mass);
 
-    vect = (const Vector<double> *)(data->getRaw(offset));
-    position = std::move(*vect);
-    offset += sizeof(position);
-
-    vect = (const Vector<double> *)(data->getRaw(offset));
-    velocity = std::move(*vect);
-    offset += sizeof(velocity);
-
+    position = restoreVector(data, offset);
+    velocity = restoreVector(data, offset);
     return offset;
+}
+
+void PhysicalObject::saveVector(const Vector<double> &vect, SavableData *savable) const
+{
+    savable->add(vect.size());
+
+    for(int i = 0; i < vect.size(); ++i)
+        savable->add(PackObject(vect[i]));
+}
+
+Vector<double> PhysicalObject::restoreVector(const SavableData *savable, unsigned &offset) const
+{
+    Vector<double> result(*savable->getRaw(offset));
+    offset += 1;
+
+    for(int i = 0; i < velocity.size(); ++i)
+    {
+        result[i] = *(double*)(savable->getRaw(offset));
+        offset += sizeof(double);
+    }
+
+    return result;
 }

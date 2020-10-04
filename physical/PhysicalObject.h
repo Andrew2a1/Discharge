@@ -29,6 +29,10 @@ public:
 
     virtual SavableData* save() const override;
     virtual unsigned restore(const SavableData *data) override;
+
+private:
+    void saveVector(const Vector<double> &vect, SavableData *savable) const;
+    Vector<double> restoreVector(const SavableData *savable, unsigned &offset) const;
 };
 
 #endif // PHYSICALOBJECT_H
