@@ -10,8 +10,10 @@ CONFIG += c++11
 
 SOURCES += \
     gui/draggablegraphic.cpp \
+    gui/electrostaticgraphicobject.cpp \
     gui/graphicobject.cpp \
     gui/historywidget.cpp \
+    gui/physicalgraphicobject.cpp \
     gui/simulationgraphicobject.cpp \
     gui/simulationwidget.cpp \
     gui/simulationwidgetstate.cpp \
@@ -19,35 +21,33 @@ SOURCES += \
     gui/zoomwidget.cpp \
     main.cpp \
     mainwindow.cpp \
-    physical/ChargeModifier.cpp \
     physical/ElectricCharge.cpp \
-    physical/PhysicalMemento.cpp \
-    physical/PhysicalModifier.cpp \
     physical/PhysicalObject.cpp \
     physical/Simulation.cpp \
     physical/SimulationState.cpp \
+    toolbox/SavableData.cpp \
     toolbox/matrix.cpp \
     toolbox/vector.cpp
 
 HEADERS += \
     gui/draggablegraphic.h \
+    gui/electrostaticgraphicobject.h \
     gui/graphicobject.h \
     gui/historywidget.h \
+    gui/physicalgraphicobject.h \
     gui/simulationgraphicobject.h \
     gui/simulationwidget.h \
     gui/simulationwidgetstate.h \
     gui/timecontrolwidget.h \
     gui/zoomwidget.h \
     mainwindow.h \
-    physical/ChargeModifier.h \
-    physical/ChargeState.h \
     physical/ElectricCharge.h \
-    physical/PhysicalMemento.h \
-    physical/PhysicalModifier.h \
+    physical/PhysicalConstants.h \
     physical/PhysicalObject.h \
-    physical/PhysicalState.h \
+    physical/PhysicalObjectPtr.h \
     physical/Simulation.h \
-    physical/SimulationState.h \
+    toolbox/Savable.h \
+    toolbox/SavableData.h \
     toolbox/history.h \
     toolbox/matrix.h \
     toolbox/matrixexception.h \

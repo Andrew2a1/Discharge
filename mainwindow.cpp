@@ -6,8 +6,10 @@
 
 #include "physical/PhysicalObject.h"
 #include "physical/ElectricCharge.h"
+#include "physical/PhysicalObjectPtr.h"
 
-#include "gui/simulationgraphicobject.h"
+#include "gui/physicalgraphicobject.h"
+#include "gui/electrostaticgraphicobject.h"
 #include "gui/draggablegraphic.h"
 
 #include <QGridLayout>
@@ -19,6 +21,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     connect(ui->action_Exit, SIGNAL(triggered()), this, SLOT(close()));
+
+    ui->simulation->saveCheckpoint();
     createGraphicObjects();
 }
 
@@ -29,23 +33,45 @@ MainWindow::~MainWindow()
 
 void MainWindow::createGraphicObjects()
 {
+    createPhysical();
+    createElectrostatic();
+}
+
+void MainWindow::createPhysical()
+{
     QGridLayout *physicals = new QGridLayout(ui->physicalBox);
 
-    PhysicalObject *phys = new PhysicalObject(1e14);
-    phys->setPosition(Vector<>({0, 0}));
-    phys->setVelocity(Vector<>({0, 0}));
+    PhysicalObjectPtr phys(new PhysicalObject(1e12));
+    setTo2D(phys);
 
-    SimulationGraphicObject *obj = new SimulationGraphicObject(phys, this);
+    PhysicalGraphicObject *physicalGraphic = new PhysicalGraphicObject(phys);
+    physicals->addWidget(new DraggableGraphic(physicalGraphic, this));
+}
 
-    physicals->addWidget(new DraggableGraphic(obj, this));
-
+void MainWindow::createElectrostatic()
+{
     QGridLayout *electrostatic = new QGridLayout(ui->electrostaticBox);
+    electrostatic->setAlignment(Qt::AlignTop);
 
-    ElectricCharge *electric = new ElectricCharge(1.0, 1);
-    electric->setPosition(Vector<>({0, 0}));
-    electric->setVelocity(Vector<>({0, 0}));
+    ElectricChargePtr electricNeutral(new ElectricCharge(1.0, 0));
+    ElectricChargePtr electricPlus(new ElectricCharge(1.0, 1e-4));
+    ElectricChargePtr electricMinus(new ElectricCharge(1.0, -1e-4));
 
-    SimulationGraphicObject *obj2 = new SimulationGraphicObject(electric, this);
+    setTo2D(electricNeutral);
+    setTo2D(electricPlus);
+    setTo2D(electricMinus);
 
-    electrostatic->addWidget(new DraggableGraphic(obj2, this));
+    ElectrostaticGraphicObject *neutral = new ElectrostaticGraphicObject(electricNeutral);
+    ElectrostaticGraphicObject *plus = new ElectrostaticGraphicObject(electricPlus);
+    ElectrostaticGraphicObject *minus = new ElectrostaticGraphicObject(electricMinus);
+
+    electrostatic->addWidget(new DraggableGraphic(neutral, this), 0, 0);
+    electrostatic->addWidget(new DraggableGraphic(plus, this), 0, 1);
+    electrostatic->addWidget(new DraggableGraphic(minus, this), 1, 0, Qt::AlignTop);
+}
+
+void MainWindow::setTo2D(const PhysicalObjectPtr &physical)
+{
+    physical->setPosition(Vector<>({0, 0}));
+    physical->setVelocity(Vector<>({0, 0}));
 }

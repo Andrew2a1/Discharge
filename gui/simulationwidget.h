@@ -6,10 +6,10 @@
 #include <QList>
 
 #include "physical/Simulation.h"
-#include "graphicobject.h"
+#include "physical/PhysicalObjectPtr.h"
 
-class SimulationWidgetState;
-class SimulationGraphicObject;
+#include "graphicobject.h"
+#include "simulationwidgetstate.h"
 
 namespace Ui {
 class SimulationWidget;
@@ -23,7 +23,7 @@ private:
     Ui::SimulationWidget *ui;
     Simulation simulation;
 
-    QList<GraphicObject*> graphicObjects;
+    QList<GraphicObjectPtr> graphicObjects;
 
     QPoint translation;
     QPoint clickedPoint;
@@ -36,16 +36,16 @@ public:
     explicit SimulationWidget(QWidget *parent = nullptr);
     ~SimulationWidget();
 
-    void addToSimulation(SimulationGraphicObject *object);
-    void addGraphicObject(GraphicObject *object);
+    void addToSimulation(PhysicalObjectPtr physical, GraphicObjectPtr graphic);
 
-    void removeGraphicObject(GraphicObject *object);
+    void addGraphicObject(GraphicObjectPtr object);
+    void removeGraphicObject(GraphicObjectPtr object);
     void clearScene();
 
     void applyTime(double dt);
 
-    SimulationWidgetState *createState();
-    void restoreState(SimulationWidgetState *state);
+    SimulationWidgetStatePtr createState();
+    void restoreState(SimulationWidgetStatePtr state);
 
     void saveCheckpoint();
 

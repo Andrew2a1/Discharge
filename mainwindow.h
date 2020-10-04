@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "physical/PhysicalObjectPtr.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -20,6 +21,10 @@ public:
 
 private:
     void createGraphicObjects();
+    void createPhysical();
+    void createElectrostatic();
+
+    void setTo2D(const PhysicalObjectPtr &physical);
 
 };
 #endif // MAINWINDOW_H
