@@ -1,6 +1,6 @@
 #include "ElectricCharge.h"
 #include "PhysicalConstants.h"
-#include "SavableData.h"
+#include "toolbox/SavableData.h"
 
 ElectricCharge::ElectricCharge(double mass, double charge) :
     PhysicalObject(mass),
@@ -29,7 +29,7 @@ Vector<double> ElectricCharge::calculateForce(const PhysicalObject *other) const
         force = other->getPosition() - getPosition();
         const double distance = force.abs();
 
-        force *= (getCharge() * electrostatic->getCharge()) /
+        force *= -(getCharge() * electrostatic->getCharge()) /
                  (4 * PI * e0 * std::pow(distance, 3));
     }
 
