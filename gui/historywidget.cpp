@@ -22,7 +22,7 @@ void HistoryWidget::setTarget(SimulationWidget *simWidget)
     simulationWidget = simWidget;
 }
 
-void HistoryWidget::save(SimulationWidgetState *state)
+void HistoryWidget::save(SimulationWidgetStatePtr state)
 {
     history.add(state);
     updateButtons();

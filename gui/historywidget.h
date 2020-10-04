@@ -2,11 +2,12 @@
 #define HISTORYWIDGET_H
 
 #include <QWidget>
+#include "simulationwidgetstate.h"
 #include "toolbox/history.h"
 
 class SimulationWidget;
-class SimulationWidgetState;
-typedef History<SimulationWidgetState*> SimulationHistory;
+
+typedef History<SimulationWidgetStatePtr> SimulationHistory;
 
 namespace Ui {
 class HistoryWidget;
@@ -26,7 +27,7 @@ public:
     ~HistoryWidget();
 
     void setTarget(SimulationWidget *simWidget);
-    void save(SimulationWidgetState *state);
+    void save(SimulationWidgetStatePtr state);
     void setMaxHistoryLen(unsigned max);
 
 private:
