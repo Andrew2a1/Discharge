@@ -2,33 +2,21 @@
 #define SIMULATIONGRAPHICOBJECT_H
 
 #include "graphicobject.h"
-
-class PhysicalObject;
+#include "physical/PhysicalObjectPtr.h"
 
 constexpr int RADIUS = 20;
 
 class SimulationGraphicObject : public GraphicObject
 {
-    Q_OBJECT
-
-private:
-    PhysicalObject *physical;
-
 public:
-    explicit SimulationGraphicObject(PhysicalObject *physicalObject,
-                                     QObject *parent = nullptr);
-
-    virtual ~SimulationGraphicObject();
-
-    PhysicalObject *getPhysical() const;
+    virtual ~SimulationGraphicObject() = default;
+    virtual PhysicalObjectPtr getPhysical() const = 0;
 
     void setPosition(const QPoint &newPosition) override;
     QPoint pos() const override;
 
     virtual QRect getBounds() const override;
     virtual void draw(QPainter *painter) override;
-
-    virtual GraphicObject* clone() const override;
 };
 
 #endif // SIMULATIONGRAPHICOBJECT_H
