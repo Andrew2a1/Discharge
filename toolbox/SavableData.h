@@ -16,6 +16,9 @@ public:
     void reserve(unsigned length);
 
     void add(const char *newData, unsigned size);
+    void add(char byte);
+    void add(const SavableData &other);
+
     const char *getRaw(unsigned start = 0) const;
     
     unsigned size() const;
