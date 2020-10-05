@@ -1,4 +1,5 @@
 #include "graphicobject.h"
+#include "attributeeditorwidget.h"
 #include <QRect>
 
 void GraphicObject::setPosition(const QPoint &newPosition)
@@ -26,6 +27,11 @@ GraphicObject *GraphicObject::clone() const
     GraphicObject *cpy = new GraphicObject;
     cpy->setPosition(this->pos());
     return cpy;
+}
+
+AttributeEditorWidget *GraphicObject::createAttributeEditor(QWidget *parent)
+{
+    return new AttributeEditorWidget(this, parent);
 }
 
 bool GraphicObject::covers(const QPoint &point)

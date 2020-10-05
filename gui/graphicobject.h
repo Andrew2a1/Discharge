@@ -1,11 +1,13 @@
 #ifndef GRAPHICOBJECT_H
 #define GRAPHICOBJECT_H
 
-class QPoint;
-class QRect;
-
 #include <memory>
 
+class QWidget;
+class AttributeEditorWidget;
+
+class QPoint;
+class QRect;
 class QPainter;
 
 class GraphicObject
@@ -20,6 +22,7 @@ public:
     virtual void draw(QPainter *painter);
 
     virtual GraphicObject* clone() const;
+    virtual AttributeEditorWidget *createAttributeEditor(QWidget *parent);
 
     bool covers(const QPoint &point);
 };
