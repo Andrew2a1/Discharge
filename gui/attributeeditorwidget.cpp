@@ -13,9 +13,9 @@ AttributeEditorWidget::AttributeEditorWidget(GraphicObject *target, QWidget *par
     target(target)
 {
     mainLayout = new QGridLayout(this);
+    this->lower();
 
     addSection("Attributes");
-    lower();
 }
 
 GraphicObject *AttributeEditorWidget::getTarget() const
@@ -50,6 +50,7 @@ void AttributeEditorWidget::addDoubleAttr(const QString &name,
     QDoubleSpinBox *spinBox = new QDoubleSpinBox(this);
     spinBox->setMinimum(-1e18);
     spinBox->setMaximum(1e18);
+    spinBox->setDecimals(18);
     spinBox->setValue(defaultValue);
 
     connect(spinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), callback);

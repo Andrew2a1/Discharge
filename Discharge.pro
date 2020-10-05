@@ -9,6 +9,7 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    gui/attributeeditorwidget.cpp \
     gui/draggablegraphic.cpp \
     gui/electrostaticgraphicobject.cpp \
     gui/graphicobject.cpp \
@@ -30,6 +31,7 @@ SOURCES += \
     toolbox/vector.cpp
 
 HEADERS += \
+    gui/attributeeditorwidget.h \
     gui/draggablegraphic.h \
     gui/electrostaticgraphicobject.h \
     gui/graphicobject.h \

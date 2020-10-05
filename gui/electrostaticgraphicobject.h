@@ -16,6 +16,8 @@ public:
 
     virtual PhysicalObjectPtr getPhysical() const override;
     virtual GraphicObject *clone() const override;
+
+    virtual AttributeEditorWidget *createAttributeEditor(QWidget *parent) override;
 };
 
 #endif // ELECTROSTATICGRAPHICOBJECT_H

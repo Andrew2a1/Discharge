@@ -1,5 +1,7 @@
 #include "electrostaticgraphicobject.h"
+#include "attributeeditorwidget.h"
 #include "physical/ElectricCharge.h"
+
 #include <QPainter>
 
 ElectrostaticGraphicObject::ElectrostaticGraphicObject(ElectricChargePtr electrostatic) :
@@ -31,4 +33,19 @@ GraphicObject *ElectrostaticGraphicObject::clone() const
 {
     ElectricChargePtr clone(new ElectricCharge(*electrostatic));
     return new ElectrostaticGraphicObject(clone);
+}
+
+AttributeEditorWidget *ElectrostaticGraphicObject::createAttributeEditor(QWidget *parent)
+{
+    AttributeEditorWidget* attrEdit = SimulationGraphicObject::createAttributeEditor(parent);
+
+    attrEdit->addSection("Electrostatic");
+
+    attrEdit->addDoubleAttr("Charge",
+                            [=](double charge) {
+                                electrostatic->setCharge(charge);
+                            },
+                            electrostatic->getCharge());
+
+    return attrEdit;
 }

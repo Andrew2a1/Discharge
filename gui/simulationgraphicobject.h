@@ -17,6 +17,8 @@ public:
 
     virtual QRect getBounds() const override;
     virtual void draw(QPainter *painter) override;
+
+    virtual AttributeEditorWidget *createAttributeEditor(QWidget *parent) override;
 };
 
 #endif // SIMULATIONGRAPHICOBJECT_H
