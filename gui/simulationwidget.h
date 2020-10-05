@@ -21,9 +21,10 @@ class SimulationWidget : public QWidget
 
 private:
     Ui::SimulationWidget *ui;
-    Simulation simulation;
 
+    Simulation simulation;
     QList<GraphicObjectPtr> graphicObjects;
+    AttributeEditorWidget *attrEditor = nullptr;
 
     QPoint translation;
     QPoint clickedPoint;
@@ -63,9 +64,16 @@ protected:
 
 private:
     GraphicObject *readDropData(QByteArray &itemData);
+    GraphicObjectPtr getObjectAt(const QPoint& point);
 
-    void saveToHistory();
+    QPoint toSimPosition(const QPoint &windowPos) const;
+    QPoint fromSimPosition(const QPoint &simPos) const;
+
     QPoint getContentCenter();
+    void saveToHistory();
+
+    void closeAttributeEdit();
+    void updateView();
 
 private slots:
     void updateZoom(int zoom);

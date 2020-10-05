@@ -2,6 +2,7 @@
 #include "ui_simulationwidget.h"
 
 #include "physicalgraphicobject.h"
+#include "attributeeditorwidget.h"
 
 #include <QPainter>
 #include <QMouseEvent>
@@ -62,7 +63,7 @@ void SimulationWidget::clearScene()
 void SimulationWidget::applyTime(double dt)
 {
     simulation.applyTime(dt);
-    updateGeometry();
+    updateView();
 }
 
 SimulationWidgetStatePtr SimulationWidget::createState()
@@ -99,8 +100,8 @@ void SimulationWidget::mouseMoveEvent(QMouseEvent *event)
 {
     if(isTranslating)
     {
-        translation = oldTranslation + (event->pos() - clickedPoint);
-        updateGeometry();
+        translation = oldTranslation + event->pos() - clickedPoint;
+        updateView();
     }
 
     QWidget::mouseMoveEvent(event);
@@ -115,6 +116,22 @@ void SimulationWidget::mousePressEvent(QMouseEvent *event)
         isTranslating = true;
         clickedPoint = event->pos();
         oldTranslation = translation;
+    }
+    else if(event->buttons() & Qt::LeftButton)
+    {
+        GraphicObjectPtr graphic = getObjectAt(toSimPosition(event->pos()));
+        closeAttributeEdit();
+
+        if(graphic)
+        {
+            attrEditor = graphic->createAttributeEditor(this);
+            const QSize &size = attrEditor->sizeHint();
+            const QPoint &newPos = fromSimPosition(graphic->pos());
+
+            attrEditor->setGeometry(newPos.x(), newPos.y(),
+                                    size.width() + 40, size.height() + 20);
+            attrEditor->show();
+        }
     }
 
     QWidget::mousePressEvent(event);
@@ -160,14 +177,14 @@ void SimulationWidget::dropEvent(QDropEvent *event)
     {
         QByteArray itemData = event->mimeData()->data("application/x-dnditemdata");
         GraphicObjectPtr clone(readDropData(itemData)->clone());
-        clone->setPosition(event->pos()/scale - translation);
+        clone->setPosition(toSimPosition(event->pos()));
 
         SimulationGraphicObject* simGraphic = dynamic_cast<SimulationGraphicObject*>(clone.get());
 
         if(simGraphic)
             addToSimulation(simGraphic->getPhysical(), clone);
         else
-            addGraphicObject(clone);
+            addGraphicObject(clone); 
     }
 
     QWidget::dropEvent(event);
@@ -182,6 +199,25 @@ GraphicObject *SimulationWidget::readDropData(QByteArray &itemData)
     return graphic;
 }
 
+GraphicObjectPtr SimulationWidget::getObjectAt(const QPoint &point)
+{
+    for(const auto& object : graphicObjects)
+        if(object->covers(point))
+            return object;
+
+    return nullptr;
+}
+
+QPoint SimulationWidget::toSimPosition(const QPoint &windowPos) const
+{
+    return (windowPos - translation)/scale;
+}
+
+QPoint SimulationWidget::fromSimPosition(const QPoint &simPos) const
+{
+    return simPos * scale + translation;
+}
+
 void SimulationWidget::saveCheckpoint()
 {
     saveToHistory();
@@ -191,6 +227,30 @@ void SimulationWidget::saveCheckpoint()
 void SimulationWidget::saveToHistory()
 {
     ui->historyWidget->save(createState());
+}
+
+void SimulationWidget::closeAttributeEdit()
+{
+    if(attrEditor)
+    {
+        attrEditor->close();
+        attrEditor = nullptr;
+    }
+}
+
+void SimulationWidget::updateView()
+{
+    if(attrEditor)
+    {
+        const QPoint newPos = fromSimPosition(attrEditor->getTarget()->pos());
+
+        attrEditor->setGeometry(newPos.x(),
+                                newPos.y(),
+                                attrEditor->width(),
+                                attrEditor->height());
+    }
+
+    updateGeometry();
 }
 
 QPoint SimulationWidget::getContentCenter()
@@ -207,12 +267,12 @@ QPoint SimulationWidget::getContentCenter()
 void SimulationWidget::updateZoom(int zoom)
 {
     scale = qMax(static_cast<qreal>(zoom) / 100.0, 0.1);
-    updateGeometry();
+    updateView();
 }
 
 void SimulationWidget::fitToContent()
 {
     QPoint newTranslation = rect().center() - getContentCenter();
     translation = newTranslation;
-    updateGeometry();
+    updateView();
 }
