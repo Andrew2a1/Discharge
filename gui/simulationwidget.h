@@ -26,12 +26,18 @@ private:
     QList<GraphicObjectPtr> graphicObjects;
     AttributeEditorWidget *attrEditor = nullptr;
 
+    GraphicObjectPtr moveTarget = nullptr;
+    QPoint oldMoveTargetPos;
+
     QPoint translation;
     QPoint clickedPoint;
     QPoint oldTranslation;
 
     qreal scale = 1.0;
+
     bool isTranslating = false;
+    bool isMoving = false;
+    bool shouldSave = false;
 
 public:
     explicit SimulationWidget(QWidget *parent = nullptr);
@@ -72,7 +78,9 @@ private:
     QPoint getContentCenter();
     void saveToHistory();
 
+    void createAttributeEdit(GraphicObjectPtr obj);
     void closeAttributeEdit();
+
     void updateView();
 
 private slots:

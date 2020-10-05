@@ -98,40 +98,46 @@ void SimulationWidget::paintEvent(QPaintEvent *event)
 
 void SimulationWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    if(isTranslating)
-    {
-        translation = oldTranslation + event->pos() - clickedPoint;
-        updateView();
-    }
+    QPoint delta = event->pos() - clickedPoint;
+    shouldSave = true;
 
+    if(isTranslating)
+        translation = oldTranslation + delta;
+    else if (moveTarget)
+        moveTarget->setPosition(toSimPosition(oldMoveTargetPos + delta));
+    else
+        shouldSave = false;
+
+    updateView();
     QWidget::mouseMoveEvent(event);
 }
 
 void SimulationWidget::mousePressEvent(QMouseEvent *event)
 {
+    clickedPoint = event->pos();
+
     if(event->buttons() & Qt::MiddleButton)
     {
         setCursor(Qt::SizeAllCursor);
 
         isTranslating = true;
-        clickedPoint = event->pos();
         oldTranslation = translation;
     }
     else if(event->buttons() & Qt::LeftButton)
     {
-        GraphicObjectPtr graphic = getObjectAt(toSimPosition(event->pos()));
+        closeAttributeEdit();
+        moveTarget = getObjectAt(toSimPosition(clickedPoint));
+
+        if(moveTarget)
+            oldMoveTargetPos = fromSimPosition(moveTarget->pos());
+    }
+    else if(event->buttons() & Qt::RightButton)
+    {
+        GraphicObjectPtr graphic = getObjectAt(toSimPosition(clickedPoint));
         closeAttributeEdit();
 
         if(graphic)
-        {
-            attrEditor = graphic->createAttributeEditor(this);
-            const QSize &size = attrEditor->sizeHint();
-            const QPoint &newPos = fromSimPosition(graphic->pos());
-
-            attrEditor->setGeometry(newPos.x(), newPos.y(),
-                                    size.width() + 40, size.height() + 20);
-            attrEditor->show();
-        }
+            createAttributeEdit(graphic);
     }
 
     QWidget::mousePressEvent(event);
@@ -139,9 +145,14 @@ void SimulationWidget::mousePressEvent(QMouseEvent *event)
 
 void SimulationWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-    isTranslating = false;
-    setCursor(Qt::ArrowCursor);
+    if(shouldSave)
+        saveCheckpoint();
 
+    shouldSave = false;
+    isTranslating = false;
+    moveTarget = nullptr;
+
+    setCursor(Qt::ArrowCursor);
     QWidget::mouseReleaseEvent(event);
 }
 
@@ -227,6 +238,18 @@ void SimulationWidget::saveCheckpoint()
 void SimulationWidget::saveToHistory()
 {
     ui->historyWidget->save(createState());
+}
+
+void SimulationWidget::createAttributeEdit(GraphicObjectPtr obj)
+{
+    attrEditor = obj->createAttributeEditor(this);
+
+    const QSize &size = attrEditor->sizeHint();
+    const QPoint &newPos = fromSimPosition(obj->pos());
+
+    attrEditor->setGeometry(newPos.x(), newPos.y(),
+                            size.width() + 40, size.height() + 20);
+    attrEditor->show();
 }
 
 void SimulationWidget::closeAttributeEdit()
