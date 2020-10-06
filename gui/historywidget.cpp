@@ -8,8 +8,8 @@ HistoryWidget::HistoryWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    connect(ui->redoButton, &QPushButton::clicked, this, &HistoryWidget::restoreNext);
-    connect(ui->undoButton, &QPushButton::clicked, this, &HistoryWidget::restorePrevious);
+    connect(ui->redoButton, &QPushButton::clicked, this, &HistoryWidget::redo);
+    connect(ui->undoButton, &QPushButton::clicked, this, &HistoryWidget::undo);
 }
 
 HistoryWidget::~HistoryWidget()
@@ -39,7 +39,7 @@ void HistoryWidget::updateButtons()
     ui->undoButton->setEnabled(history.hasPrevious());
 }
 
-void HistoryWidget::restorePrevious()
+void HistoryWidget::undo()
 {
     if(simulationWidget && history.hasPrevious())
         simulationWidget->restoreState(history.previous());
@@ -48,7 +48,7 @@ void HistoryWidget::restorePrevious()
     simulationWidget->updateGeometry();
 }
 
-void HistoryWidget::restoreNext()
+void HistoryWidget::redo()
 {
     if(simulationWidget && history.hasNext())
         simulationWidget->restoreState(history.next());

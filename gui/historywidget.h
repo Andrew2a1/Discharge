@@ -30,12 +30,13 @@ public:
     void save(SimulationWidgetStatePtr state);
     void setMaxHistoryLen(unsigned max);
 
+public slots:
+    void undo();
+    void redo();
+
 private:
     void updateButtons();
 
-private slots:
-    void restorePrevious();
-    void restoreNext();
 };
 
 #endif // HISTORYWIDGET_H
