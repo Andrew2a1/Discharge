@@ -26,8 +26,9 @@ private:
     QList<GraphicObjectPtr> graphicObjects;
     AttributeEditorWidget *attrEditor = nullptr;
 
-    GraphicObjectPtr moveTarget = nullptr;
-    QPoint oldMoveTargetPos;
+    QList<GraphicObjectPtr> selected;
+    QRect selection;
+    QPoint oldMovePos;
 
     QPoint translation;
     QPoint clickedPoint;
@@ -36,6 +37,7 @@ private:
     qreal scale = 1.0;
 
     bool isTranslating = false;
+    bool isSelecting = false;
     bool isMoving = false;
     bool shouldSave = false;
 
@@ -58,6 +60,8 @@ public:
 
 protected:
     void paintEvent(QPaintEvent *event) override;
+
+    void keyPressEvent(QKeyEvent *event) override;
 
     void mouseMoveEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
