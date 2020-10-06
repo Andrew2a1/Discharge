@@ -15,6 +15,7 @@ SOURCES += \
     gui/graphicobject.cpp \
     gui/historywidget.cpp \
     gui/physicalgraphicobject.cpp \
+    gui/selectionmanager.cpp \
     gui/simulationgraphicobject.cpp \
     gui/simulationwidget.cpp \
     gui/simulationwidgetstate.cpp \
@@ -37,6 +38,7 @@ HEADERS += \
     gui/graphicobject.h \
     gui/historywidget.h \
     gui/physicalgraphicobject.h \
+    gui/selectionmanager.h \
     gui/simulationgraphicobject.h \
     gui/simulationwidget.h \
     gui/simulationwidgetstate.h \

@@ -9,6 +9,7 @@
 #include "physical/PhysicalObjectPtr.h"
 
 #include "graphicobject.h"
+#include "selectionmanager.h"
 #include "simulationwidgetstate.h"
 
 namespace Ui {
@@ -26,8 +27,7 @@ private:
     QList<GraphicObjectPtr> graphicObjects;
     AttributeEditorWidget *attrEditor = nullptr;
 
-    QList<GraphicObjectPtr> selected;
-    QRect selection;
+    SelectionManager *selection;
     QPoint oldMovePos;
 
     QPoint translation;

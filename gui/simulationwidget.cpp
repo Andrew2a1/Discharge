@@ -15,6 +15,7 @@ SimulationWidget::SimulationWidget(QWidget *parent) :
     ui(new Ui::SimulationWidget)
 {
     ui->setupUi(this);
+    selection = new SelectionManager(graphicObjects, this);
 
     connect(ui->zoomWidget, &ZoomWidget::zoomUpdated,
             this, &SimulationWidget::updateZoom);
@@ -51,9 +52,6 @@ void SimulationWidget::removeGraphicObject(GraphicObjectPtr object)
 {
     if(attrEditor && attrEditor->getTarget() == object.get())
         closeAttributeEdit();
-
-    if(selected.contains(object))
-        selected.removeOne(object);
 
     graphicObjects.removeOne(object);
 
@@ -97,13 +95,13 @@ void SimulationWidget::paintEvent(QPaintEvent *event)
     painter.scale(scale, scale);
 
     if(isSelecting)
-        painter.drawRect(selection);
+        painter.drawRect(selection->getSelection());
 
     for(auto& graphic : graphicObjects)
     {
         graphic->draw(&painter);
 
-        if(selected.contains(graphic))
+        if(selection->contains(graphic))
             painter.drawRect(graphic->getBounds());
     }
 
@@ -113,10 +111,14 @@ void SimulationWidget::paintEvent(QPaintEvent *event)
 
 void SimulationWidget::keyPressEvent(QKeyEvent *event)
 {
+    QList<GraphicObjectPtr> selected = selection->getSelected();
+
     if((event->key() == Qt::Key_Delete) && !selected.isEmpty())
     {
         for(auto &obj : selected)
             removeGraphicObject(obj);
+
+        selection->clearSelection();
     }
 
     QWidget::keyPressEvent(event);
@@ -131,23 +133,11 @@ void SimulationWidget::mouseMoveEvent(QMouseEvent *event)
         translation = oldTranslation + delta;
     else if(isSelecting)
     {
-        selection = QRect(toSimPosition(clickedPoint), toSimPosition(event->pos()));
-        for(const auto& graphic : graphicObjects)
-        {
-            if(selection.contains(graphic->getBounds()))
-            {
-                if(!selected.contains(graphic))
-                    selected.append(graphic);
-            }
-            else
-            {
-                selected.removeOne(graphic);
-            }
-        }
+        selection->addAllFrom(QRect(toSimPosition(clickedPoint), toSimPosition(event->pos())));
     }
-    else if (!selected.isEmpty() && isMoving)
+    else if (!selection->isEmpty() && isMoving)
     {
-        for(auto &obj : selected)
+        for(auto &obj : selection->getSelected())
             obj->setPosition(obj->pos() + (event->pos() - oldMovePos)/scale);
     }
     else
@@ -173,19 +163,19 @@ void SimulationWidget::mousePressEvent(QMouseEvent *event)
     else if(event->buttons() & Qt::LeftButton)
     {
         closeAttributeEdit();
+
         GraphicObjectPtr lastClicked = getObjectAt(toSimPosition(clickedPoint));
         oldMovePos = clickedPoint;
+        isMoving = true;
 
         if(!lastClicked) {
-            selected.clear();
-            selection = QRect();
+            selection->clearSelection();
             isSelecting = true;
+            isMoving = false;
         }
-        else
-        {
-            if(!selected.contains(lastClicked))
-                selected.append(lastClicked);
-            isMoving = true;
+        else if(!selection->contains(lastClicked)) {
+            selection->clearSelection();
+            selection->addSelected(lastClicked);
         }
     }
     else if(event->buttons() & Qt::RightButton)
