@@ -10,6 +10,7 @@ CONFIG += c++11
 
 SOURCES += \
     gui/attributeeditorwidget.cpp \
+    gui/copymanager.cpp \
     gui/draggablegraphic.cpp \
     gui/electrostaticgraphicobject.cpp \
     gui/graphicobject.cpp \
@@ -33,6 +34,7 @@ SOURCES += \
 
 HEADERS += \
     gui/attributeeditorwidget.h \
+    gui/copymanager.h \
     gui/draggablegraphic.h \
     gui/electrostaticgraphicobject.h \
     gui/graphicobject.h \

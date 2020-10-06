@@ -18,29 +18,6 @@
     <item row="1" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout_2"/>
     </item>
-    <item row="1" column="2">
-     <widget class="QTabWidget" name="tabWidget">
-      <property name="tabShape">
-       <enum>QTabWidget::Rounded</enum>
-      </property>
-      <property name="currentIndex">
-       <number>0</number>
-      </property>
-      <property name="tabBarAutoHide">
-       <bool>false</bool>
-      </property>
-      <widget class="QWidget" name="tab">
-       <attribute name="title">
-        <string>Sim1</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <item>
-         <widget class="SimulationWidget" name="simulation" native="true"/>
-        </item>
-       </layout>
-      </widget>
-     </widget>
-    </item>
     <item row="1" column="1">
      <layout class="QVBoxLayout" name="palette" stretch="0,1">
       <item>
@@ -58,6 +35,34 @@
        </widget>
       </item>
      </layout>
+    </item>
+    <item row="1" column="2">
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="tabShape">
+       <enum>QTabWidget::Rounded</enum>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <property name="elideMode">
+       <enum>Qt::ElideNone</enum>
+      </property>
+      <property name="tabsClosable">
+       <bool>true</bool>
+      </property>
+      <property name="movable">
+       <bool>true</bool>
+      </property>
+      <property name="tabBarAutoHide">
+       <bool>false</bool>
+      </property>
+      <widget class="SimulationWidget" name="simulation">
+       <attribute name="title">
+        <string>Sim1</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout"/>
+      </widget>
+     </widget>
     </item>
    </layout>
   </widget>

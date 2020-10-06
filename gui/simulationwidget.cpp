@@ -29,11 +29,18 @@ SimulationWidget::SimulationWidget(QWidget *parent) :
 
     setFocusPolicy(Qt::ClickFocus);
     setAcceptDrops(true);
+
+    saveCheckpoint();
 }
 
 SimulationWidget::~SimulationWidget()
 {
     delete ui;
+}
+
+void SimulationWidget::setCopyManager(CopyManager *manager)
+{
+    copyManager = manager;
 }
 
 void SimulationWidget::addGraphicObject(GraphicObjectPtr object)
@@ -125,25 +132,58 @@ void SimulationWidget::keyPressEvent(QKeyEvent *event)
 
         selection->clearSelection();
     }
-    else if(event->matches(QKeySequence::Copy) && !selected.isEmpty())
-    {
-        copied = selected;
+    else if(event->matches(QKeySequence::Copy)) {
+        handleCopy();
     }
-    else if(event->matches(QKeySequence::Cut) && !selected.isEmpty())
-    {
-        copied = selected;
+    else if(event->matches(QKeySequence::Cut)) {
+        handleCut();
+    }
+    else if(event->matches(QKeySequence::Paste)) {
+        handlePaste();
+    }
+    else if(event->matches(QKeySequence::Undo)) {
+        ui->historyWidget->undo();
+    }
+    else if(event->matches(QKeySequence::Redo)) {
+        ui->historyWidget->redo();
+    }
 
-        selection->clearSelection();
-        for(auto &obj : selected)
-        {
+    QWidget::keyPressEvent(event);
+}
+
+void SimulationWidget::handleCopy()
+{
+    if(copyManager && !selection->isEmpty())
+    {
+        QList<GraphicObjectPtr> copied;
+
+        for(const auto& obj : selection->getSelected())
+            copied.append(GraphicObjectPtr(obj->clone()));
+
+        copyManager->setCopied(copied);
+    }
+}
+
+void SimulationWidget::handleCut()
+{
+    if(copyManager && !selection->isEmpty())
+    {
+        copyManager->setCopied(selection->getSelected());
+
+        for(auto &obj : selection->getSelected())
             removeGraphicObject(obj);
-        }
+
+        selection->clearSelection();
     }
-    else if(event->matches(QKeySequence::Paste) && !copied.isEmpty())
+}
+
+void SimulationWidget::handlePaste()
+{
+    if(copyManager && !copyManager->isEmpty())
     {
         selection->clearSelection();
 
-        for(auto &obj : copied)
+        for(auto &obj : copyManager->getCopied())
         {
             GraphicObjectPtr added(obj->clone());
 
@@ -151,16 +191,6 @@ void SimulationWidget::keyPressEvent(QKeyEvent *event)
             selection->addSelected(added);
         }
     }
-    else if(event->matches(QKeySequence::Undo))
-    {
-        ui->historyWidget->undo();
-    }
-    else if(event->matches(QKeySequence::Redo))
-    {
-        ui->historyWidget->redo();
-    }
-
-    QWidget::keyPressEvent(event);
 }
 
 void SimulationWidget::mouseMoveEvent(QMouseEvent *event)
@@ -221,6 +251,8 @@ void SimulationWidget::mousePressEvent(QMouseEvent *event)
     {
         GraphicObjectPtr graphic = getObjectAt(toSimPosition(clickedPoint));
         closeAttributeEdit();
+
+        selection->clearSelection();
 
         if(graphic)
             createAttributeEdit(graphic);

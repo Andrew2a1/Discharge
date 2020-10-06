@@ -12,6 +12,8 @@
 #include "selectionmanager.h"
 #include "simulationwidgetstate.h"
 
+#include "copymanager.h"
+
 namespace Ui {
 class SimulationWidget;
 }
@@ -25,10 +27,10 @@ private:
     Simulation simulation;
 
     AttributeEditorWidget *attrEditor = nullptr;
+    CopyManager *copyManager = nullptr;
     SelectionManager *selection;
 
     QList<GraphicObjectPtr> graphicObjects;
-    QList<GraphicObjectPtr> copied;
 
     QPoint oldMovePos;
     QPoint translation;
@@ -45,6 +47,8 @@ private:
 public:
     explicit SimulationWidget(QWidget *parent = nullptr);
     ~SimulationWidget();
+
+    void setCopyManager(CopyManager *manager);
 
     void addGraphicObject(GraphicObjectPtr object);
     void removeGraphicObject(GraphicObjectPtr object);
@@ -80,6 +84,10 @@ private:
 
     QPoint getContentCenter();
     void saveToHistory();
+
+    void handleCopy();
+    void handleCut();
+    void handlePaste();
 
     void createAttributeEdit(GraphicObjectPtr obj);
     void closeAttributeEdit();
