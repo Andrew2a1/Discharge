@@ -27,6 +27,14 @@ void SelectionManager::addAllFrom(const QRect &newSeletion)
     selection = newSeletion;
 }
 
+bool SelectionManager::contains(const QPoint &point) const
+{
+    for(const auto& obj : selected)
+        if(obj->getBounds().contains(point))
+            return true;
+    return false;
+}
+
 bool SelectionManager::contains(const GraphicObjectPtr &graphic) const
 {
     return selected.contains(graphic);

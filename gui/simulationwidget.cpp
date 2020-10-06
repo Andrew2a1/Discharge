@@ -1,6 +1,7 @@
 #include "simulationwidget.h"
 #include "ui_simulationwidget.h"
 
+#include "simulationgraphicobject.h"
 #include "physicalgraphicobject.h"
 #include "attributeeditorwidget.h"
 
@@ -35,14 +36,13 @@ SimulationWidget::~SimulationWidget()
     delete ui;
 }
 
-void SimulationWidget::addToSimulation(PhysicalObjectPtr physical, GraphicObjectPtr graphic)
-{
-    simulation.addSubject(physical);
-    addGraphicObject(graphic);
-}
-
 void SimulationWidget::addGraphicObject(GraphicObjectPtr object)
 {
+    SimulationGraphicObject* simulated = dynamic_cast<SimulationGraphicObject*>(object.get());
+
+    if(simulated)
+        simulation.addSubject(simulated->getPhysical());
+
     graphicObjects.append(object);
     saveCheckpoint();
     updateGeometry();
@@ -50,6 +50,11 @@ void SimulationWidget::addGraphicObject(GraphicObjectPtr object)
 
 void SimulationWidget::removeGraphicObject(GraphicObjectPtr object)
 {
+    SimulationGraphicObject* simulated = dynamic_cast<SimulationGraphicObject*>(object.get());
+
+    if(simulated)
+        simulation.removeSubject(simulated->getPhysical());
+
     if(attrEditor && attrEditor->getTarget() == object.get())
         closeAttributeEdit();
 
@@ -120,6 +125,40 @@ void SimulationWidget::keyPressEvent(QKeyEvent *event)
 
         selection->clearSelection();
     }
+    else if(event->matches(QKeySequence::Copy) && !selected.isEmpty())
+    {
+        copied = selected;
+    }
+    else if(event->matches(QKeySequence::Cut) && !selected.isEmpty())
+    {
+        copied = selected;
+
+        selection->clearSelection();
+        for(auto &obj : selected)
+        {
+            removeGraphicObject(obj);
+        }
+    }
+    else if(event->matches(QKeySequence::Paste) && !copied.isEmpty())
+    {
+        selection->clearSelection();
+
+        for(auto &obj : copied)
+        {
+            GraphicObjectPtr added(obj->clone());
+
+            addGraphicObject(added);
+            selection->addSelected(added);
+        }
+    }
+    else if(event->matches(QKeySequence::Undo))
+    {
+        ui->historyWidget->undo();
+    }
+    else if(event->matches(QKeySequence::Redo))
+    {
+        ui->historyWidget->redo();
+    }
 
     QWidget::keyPressEvent(event);
 }
@@ -173,7 +212,7 @@ void SimulationWidget::mousePressEvent(QMouseEvent *event)
             isSelecting = true;
             isMoving = false;
         }
-        else if(!selection->contains(lastClicked)) {
+        else if(!selection->contains(clickedPoint)) {
             selection->clearSelection();
             selection->addSelected(lastClicked);
         }
@@ -239,14 +278,9 @@ void SimulationWidget::dropEvent(QDropEvent *event)
     {
         QByteArray itemData = event->mimeData()->data("application/x-dnditemdata");
         GraphicObjectPtr clone(readDropData(itemData)->clone());
+
         clone->setPosition(toSimPosition(event->pos()));
-
-        SimulationGraphicObject* simGraphic = dynamic_cast<SimulationGraphicObject*>(clone.get());
-
-        if(simGraphic)
-            addToSimulation(simGraphic->getPhysical(), clone);
-        else
-            addGraphicObject(clone); 
+        addGraphicObject(clone);
     }
 
     QWidget::dropEvent(event);

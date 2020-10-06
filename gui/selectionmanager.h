@@ -25,6 +25,7 @@ public:
     void addSelected(const GraphicObjectPtr &graphic);
     void addAllFrom(const QRect &newSeletion);
 
+    bool contains(const QPoint &point) const;
     bool contains(const GraphicObjectPtr &graphic) const;
     bool isEmpty() const;
 

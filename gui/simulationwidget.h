@@ -22,14 +22,15 @@ class SimulationWidget : public QWidget
 
 private:
     Ui::SimulationWidget *ui;
-
     Simulation simulation;
-    QList<GraphicObjectPtr> graphicObjects;
+
     AttributeEditorWidget *attrEditor = nullptr;
-
     SelectionManager *selection;
-    QPoint oldMovePos;
 
+    QList<GraphicObjectPtr> graphicObjects;
+    QList<GraphicObjectPtr> copied;
+
+    QPoint oldMovePos;
     QPoint translation;
     QPoint clickedPoint;
     QPoint oldTranslation;
@@ -44,8 +45,6 @@ private:
 public:
     explicit SimulationWidget(QWidget *parent = nullptr);
     ~SimulationWidget();
-
-    void addToSimulation(PhysicalObjectPtr physical, GraphicObjectPtr graphic);
 
     void addGraphicObject(GraphicObjectPtr object);
     void removeGraphicObject(GraphicObjectPtr object);
