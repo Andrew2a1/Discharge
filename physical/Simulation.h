@@ -4,7 +4,6 @@
 #include <list>
 #include "PhysicalObjectPtr.h"
 
-class PhysicalObject;
 class SimulationState;
 
 class Simulation
@@ -23,9 +22,6 @@ public:
 
     SimulationState *saveState() const;
     void restoreState(SimulationState *simulationState);
-
-private:
-    void applyForcesBetween(PhysicalObjectPtr obj, PhysicalObjectPtr other, double dt);
 };
 
 #endif // SIMULATION_H

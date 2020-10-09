@@ -2,6 +2,8 @@
 #include "PhysicalObject.h"
 #include "SimulationState.h"
 
+#include <vector>
+
 void Simulation::clearSubjects()
 {
     subjects.clear();
@@ -12,20 +14,26 @@ void Simulation::applyTime(double dt)
     if(subjects.size() == 1)
     {
         subjects.front()->applyTime(dt);
-        return;
     }
-
-    for(auto &subject : subjects)
-        for(auto &other : subjects)
-            applyForcesBetween(subject, other, dt);
-}
-
-void Simulation::applyForcesBetween(PhysicalObjectPtr obj, PhysicalObjectPtr other, double dt)
-{
-    if(obj != other)
+    else if(subjects.size() > 1)
     {
-        const Vector<double> force = obj->calculateForce(other.get());
-        obj->applyForce(force, dt);
+        const Vector<double> vectZero = Vector<double>(subjects.front()->getPosition().size());
+        std::vector<Vector<double>> forces(subjects.size(), vectZero);
+
+        int i = 0;
+        for(auto &subject : subjects)
+        {
+            for(auto &other : subjects)
+            {
+                if(subject != other)
+                    forces[i] += subject->calculateForce(other.get());
+            }
+            ++i;
+        }
+
+        i = 0;
+        for(auto &subject : subjects)
+            subject->applyForce(forces[i++], dt);
     }
 }
 
