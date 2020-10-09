@@ -28,7 +28,6 @@ SOURCES += \
     physical/PhysicalObject.cpp \
     physical/Simulation.cpp \
     physical/SimulationState.cpp \
-    toolbox/Savable.cpp \
     toolbox/SavableData.cpp \
     toolbox/matrix.cpp \
     toolbox/vector.cpp

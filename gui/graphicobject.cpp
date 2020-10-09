@@ -4,7 +4,7 @@
 
 void GraphicObject::setPosition(const QPoint &newPosition)
 {
-    Q_UNUSED(newPosition);
+    Q_UNUSED(newPosition)
 }
 
 QPoint GraphicObject::pos() const
@@ -19,7 +19,7 @@ QRect GraphicObject::getBounds() const
 
 void GraphicObject::draw(QPainter *painter)
 {
-    Q_UNUSED(painter);
+    Q_UNUSED(painter)
 }
 
 GraphicObject *GraphicObject::clone() const

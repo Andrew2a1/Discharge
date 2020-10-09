@@ -15,27 +15,6 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout_2"/>
-    </item>
-    <item row="1" column="1">
-     <layout class="QVBoxLayout" name="palette" stretch="0,1">
-      <item>
-       <widget class="QGroupBox" name="physicalBox">
-        <property name="title">
-         <string>Physical</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QGroupBox" name="electrostaticBox">
-        <property name="title">
-         <string>Electrostatic</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
     <item row="1" column="2">
      <widget class="QTabWidget" name="tabWidget">
       <property name="tabShape">
@@ -60,9 +39,29 @@
        <attribute name="title">
         <string>Sim1</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout"/>
       </widget>
      </widget>
+    </item>
+    <item row="1" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_2"/>
+    </item>
+    <item row="1" column="1">
+     <layout class="QVBoxLayout" name="palette" stretch="0,1">
+      <item>
+       <widget class="QGroupBox" name="physicalBox">
+        <property name="title">
+         <string>Physical</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="electrostaticBox">
+        <property name="title">
+         <string>Electrostatic</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
@@ -72,7 +71,7 @@
      <x>0</x>
      <y>0</y>
      <width>771</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_Menu">
@@ -98,7 +97,7 @@
   <customwidget>
    <class>SimulationWidget</class>
    <extends>QWidget</extends>
-   <header>gui/SimulationWidget.h</header>
+   <header>gui/simulationwidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

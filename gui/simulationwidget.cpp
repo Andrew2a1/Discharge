@@ -295,7 +295,7 @@ void SimulationWidget::wheelEvent(QWheelEvent *event)
 {
     if(QApplication::keyboardModifiers() & Qt::CTRL)
     {
-        int newZoom = scale * 100;
+        int newZoom = static_cast<int>(scale * 100);
         newZoom += event->angleDelta().y() / 16;
         ui->zoomWidget->setZoom(newZoom);
     }
@@ -336,7 +336,7 @@ GraphicObject *SimulationWidget::readDropData(QByteArray &itemData) const
     QDataStream dataStream(&itemData, QIODevice::ReadOnly);
     GraphicObject *graphic;
 
-    dataStream.readRawData((char*)(&graphic), sizeof(graphic));
+    dataStream.readRawData(reinterpret_cast<char*>(&graphic), sizeof(graphic));
     return graphic;
 }
 
