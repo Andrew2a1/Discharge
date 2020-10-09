@@ -11,28 +11,28 @@ void Simulation::clearSubjects()
 
 void Simulation::applyTime(double dt)
 {
-    if(subjects.size() == 1)
+    if (subjects.size() == 1)
     {
         subjects.front()->applyTime(dt);
     }
-    else if(subjects.size() > 1)
+    else if (subjects.size() > 1)
     {
         const Vector<double> vectZero = Vector<double>(subjects.front()->getPosition().size());
         std::vector<Vector<double>> forces(subjects.size(), vectZero);
 
         int i = 0;
-        for(auto &subject : subjects)
+        for (auto &subject : subjects)
         {
-            for(auto &other : subjects)
+            for (auto &other : subjects)
             {
-                if(subject != other)
+                if (subject != other)
                     forces[i] += subject->calculateForce(other.get());
             }
             ++i;
         }
 
         i = 0;
-        for(auto &subject : subjects)
+        for (auto &subject : subjects)
             subject->applyForce(forces[i++], dt);
     }
 }
@@ -56,30 +56,36 @@ SimulationState *Simulation::saveState() const
 {
     SimulationState *simulationState = new SimulationState();
 
-    for(const auto& subject: subjects)
+    for (const auto &subject : subjects)
         simulationState->saveObject(subject);
-    
+
     return simulationState;
 }
 
-void Simulation::restoreState(SimulationState * simulationState)
+void Simulation::restoreState(SimulationState *simulationState)
 {
     std::list<PhysicalObjectPtr> savedObjects = simulationState->getSaved();
 
-    for (const auto &subject : subjects)
+    auto iter = subjects.begin();
+    while (iter != subjects.end())
     {
-        if (simulationState->isSaved(subject))
-            subject->restore(simulationState->getData(subject));
+        if (simulationState->isSaved(*iter))
+        {
+            (*iter)->restore(simulationState->getData(*iter));
+            ++iter;
+        }
         else
-            removeSubject(subject);
+        {
+            iter = subjects.erase(iter);
+        }
     }
 
-    for(const auto &saved : savedObjects)
+    for (const auto &saved : savedObjects)
     {
-        if(std::find(subjects.begin(), subjects.end(), saved) == subjects.end())
+        if (std::find(subjects.begin(), subjects.end(), saved) == subjects.end())
         {
             saved->restore(simulationState->getData(saved));
             addSubject(saved);
-        }    
+        }
     }
 }
