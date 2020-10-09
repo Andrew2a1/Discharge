@@ -76,13 +76,16 @@ protected:
     void dropEvent(QDropEvent *event) override;
 
 private:
-    GraphicObject *readDropData(QByteArray &itemData);
-    GraphicObjectPtr getObjectAt(const QPoint& point);
+    GraphicObject *readDropData(QByteArray &itemData) const;
+    GraphicObjectPtr getObjectAt(const QPoint& point) const;
 
     QPoint toSimPosition(const QPoint &windowPos) const;
     QPoint fromSimPosition(const QPoint &simPos) const;
 
-    QPoint getContentCenter();
+    bool selectMultiply() const;
+    void clearSelectionIfNotMultiply();
+
+    QPoint getContentCenter() const;
     void saveToHistory();
 
     void handleCopy();

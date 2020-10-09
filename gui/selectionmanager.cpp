@@ -19,10 +19,10 @@ void SelectionManager::addSelected(const GraphicObjectPtr &graphic)
         selected.append(graphic);
 }
 
-void SelectionManager::addAllFrom(const QRect &newSeletion)
+void SelectionManager::addFromRect(const QRect &newSeletion)
 {
     for(const auto& graphic : graphicObjects)
-        if(selection.contains(graphic->getBounds()))
+        if(newSeletion.contains(graphic->getBounds()))
             addSelected(graphic);
     selection = newSeletion;
 }

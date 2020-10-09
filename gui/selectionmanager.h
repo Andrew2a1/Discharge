@@ -23,7 +23,7 @@ public:
     const QList<GraphicObjectPtr> &getSelected() const;
 
     void addSelected(const GraphicObjectPtr &graphic);
-    void addAllFrom(const QRect &newSeletion);
+    void addFromRect(const QRect &newSeletion);
 
     bool contains(const QPoint &point) const;
     bool contains(const GraphicObjectPtr &graphic) const;

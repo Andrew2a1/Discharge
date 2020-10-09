@@ -198,23 +198,24 @@ void SimulationWidget::mouseMoveEvent(QMouseEvent *event)
     QPoint delta = event->pos() - clickedPoint;
     shouldSave = true;
 
-    if(isTranslating)
+    if(isTranslating) {
         translation = oldTranslation + delta;
-    else if(isSelecting)
-    {
-        selection->addAllFrom(QRect(toSimPosition(clickedPoint), toSimPosition(event->pos())));
     }
-    else if (!selection->isEmpty() && isMoving)
-    {
+    else if(isSelecting) {
+        clearSelectionIfNotMultiply();
+        selection->addFromRect(QRect(toSimPosition(clickedPoint), toSimPosition(event->pos())));
+    }
+    else if (!selection->isEmpty() && isMoving) {
         for(auto &obj : selection->getSelected())
             obj->setPosition(obj->pos() + (event->pos() - oldMovePos)/scale);
     }
-    else
+    else {
         shouldSave = false;
+    }
 
     oldMovePos = event->pos();
-
     updateView();
+
     QWidget::mouseMoveEvent(event);
 }
 
@@ -238,12 +239,12 @@ void SimulationWidget::mousePressEvent(QMouseEvent *event)
         isMoving = true;
 
         if(!lastClicked) {
-            selection->clearSelection();
+            clearSelectionIfNotMultiply();
             isSelecting = true;
             isMoving = false;
         }
         else if(!selection->contains(toSimPosition(clickedPoint))) {
-            selection->clearSelection();
+            clearSelectionIfNotMultiply();
             selection->addSelected(lastClicked);
         }
     }
@@ -260,6 +261,18 @@ void SimulationWidget::mousePressEvent(QMouseEvent *event)
 
     updateView();
     QWidget::mousePressEvent(event);
+}
+
+void SimulationWidget::clearSelectionIfNotMultiply()
+{
+    if(!selectMultiply())
+        selection->clearSelection();
+}
+
+bool SimulationWidget::selectMultiply() const
+{
+    return (QApplication::keyboardModifiers() & Qt::SHIFT) ||
+            (QApplication::keyboardModifiers() & Qt::CTRL);
 }
 
 void SimulationWidget::mouseReleaseEvent(QMouseEvent *event)
@@ -318,7 +331,7 @@ void SimulationWidget::dropEvent(QDropEvent *event)
     QWidget::dropEvent(event);
 }
 
-GraphicObject *SimulationWidget::readDropData(QByteArray &itemData)
+GraphicObject *SimulationWidget::readDropData(QByteArray &itemData) const
 {
     QDataStream dataStream(&itemData, QIODevice::ReadOnly);
     GraphicObject *graphic;
@@ -327,7 +340,7 @@ GraphicObject *SimulationWidget::readDropData(QByteArray &itemData)
     return graphic;
 }
 
-GraphicObjectPtr SimulationWidget::getObjectAt(const QPoint &point)
+GraphicObjectPtr SimulationWidget::getObjectAt(const QPoint &point) const
 {
     for(const auto& object : graphicObjects)
         if(object->covers(point))
@@ -393,7 +406,7 @@ void SimulationWidget::updateView()
     updateGeometry();
 }
 
-QPoint SimulationWidget::getContentCenter()
+QPoint SimulationWidget::getContentCenter() const
 {
     QPoint center;
 
