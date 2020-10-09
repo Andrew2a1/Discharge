@@ -242,7 +242,7 @@ void SimulationWidget::mousePressEvent(QMouseEvent *event)
             isSelecting = true;
             isMoving = false;
         }
-        else if(!selection->contains(clickedPoint)) {
+        else if(!selection->contains(toSimPosition(clickedPoint))) {
             selection->clearSelection();
             selection->addSelected(lastClicked);
         }
