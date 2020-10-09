@@ -1,11 +1,15 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QMessageBox>
+
 #include <QTabBar>
 #include <QPushButton>
 
 #include <QAction>
 #include <QTimer>
+
+#include <QGridLayout>
 
 #include "physical/PhysicalObject.h"
 #include "physical/ElectricCharge.h"
@@ -15,8 +19,6 @@
 #include "gui/electrostaticgraphicobject.h"
 #include "gui/draggablegraphic.h"
 
-
-#include <QGridLayout>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -29,13 +31,28 @@ MainWindow::MainWindow(QWidget *parent)
 
     configureTabWidget();
 
-    connect(ui->action_Exit, SIGNAL(triggered()), this, SLOT(close()));
+    connect(ui->action_Exit, &QAction::triggered, this, &MainWindow::close);
+    connect(ui->action_Redo, &QAction::triggered, ui->simulation, &SimulationWidget::redo);
+    connect(ui->action_Undo, &QAction::triggered, ui->simulation, &SimulationWidget::undo);
+
+    connect(ui->action_Copy, &QAction::triggered, ui->simulation, &SimulationWidget::handleCopy);
+    connect(ui->action_Cut, &QAction::triggered, ui->simulation, &SimulationWidget::handleCut);
+    connect(ui->action_Paste, &QAction::triggered, ui->simulation, &SimulationWidget::handlePaste);
+
+    connect(ui->actionAbout_Discharge, &QAction::triggered, this, &MainWindow::showAbout);
+
     createGraphicObjects();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+SimulationWidget *MainWindow::getActiveSim() const
+{
+    QWidget *current = ui->tabWidget->currentWidget();
+    return qobject_cast<SimulationWidget*>(current);
 }
 
 void MainWindow::configureTabWidget()
@@ -71,6 +88,18 @@ void MainWindow::removeTab(int idx)
     }
     if(ui->tabWidget->count() > 1)
         ui->tabWidget->removeTab(idx);
+}
+
+void MainWindow::showAbout() const
+{
+    QMessageBox *about = new QMessageBox(QMessageBox::Information,
+                                         tr("About"),
+                                         tr("Discharge is simple Qt5 graphic application "
+                                            "for basic electrostatic simulations.\n"
+                                            "Project: https://github.com/Andrew2a1/Discharge"),
+                                         QMessageBox::Ok,
+                                         this->centralWidget());
+    about->exec();
 }
 
 void MainWindow::createGraphicObjects()

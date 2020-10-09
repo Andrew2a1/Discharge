@@ -61,6 +61,14 @@ public:
 
     void saveCheckpoint();
 
+public slots:
+    void handleCopy();
+    void handleCut();
+    void handlePaste();
+
+    void undo();
+    void redo();
+
 protected:
     void paintEvent(QPaintEvent *event) override;
 
@@ -87,10 +95,6 @@ private:
 
     QPoint getContentCenter() const;
     void saveToHistory();
-
-    void handleCopy();
-    void handleCut();
-    void handlePaste();
 
     void createAttributeEdit(GraphicObjectPtr obj);
     void closeAttributeEdit();

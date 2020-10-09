@@ -4,6 +4,7 @@
 #include <QMainWindow>
 
 #include "physical/PhysicalObjectPtr.h"
+#include "gui/simulationwidget.h"
 #include "gui/copymanager.h"
 
 QT_BEGIN_NAMESPACE
@@ -23,6 +24,8 @@ public:
     ~MainWindow();
 
 private:
+    SimulationWidget *getActiveSim() const;
+
     void configureTabWidget();
 
     void createGraphicObjects();
@@ -35,5 +38,6 @@ private slots:
     void addSimulationTab();
     void removeTab(int idx);
 
+    void showAbout() const;
 };
 #endif // MAINWINDOW_H

@@ -142,10 +142,10 @@ void SimulationWidget::keyPressEvent(QKeyEvent *event)
         handlePaste();
     }
     else if(event->matches(QKeySequence::Undo)) {
-        ui->historyWidget->undo();
+        undo();
     }
     else if(event->matches(QKeySequence::Redo)) {
-        ui->historyWidget->redo();
+        redo();
     }
 
     QWidget::keyPressEvent(event);
@@ -191,6 +191,16 @@ void SimulationWidget::handlePaste()
             selection->addSelected(added);
         }
     }
+}
+
+void SimulationWidget::undo()
+{
+    ui->historyWidget->undo();
+}
+
+void SimulationWidget::redo()
+{
+    ui->historyWidget->redo();
 }
 
 void SimulationWidget::mouseMoveEvent(QMouseEvent *event)
