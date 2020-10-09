@@ -66,7 +66,7 @@ TEST_CASE("ElectricCharge apply time", "[ElectricCharge]")
 TEST_CASE("ElectricCharge calculate force", "[ElectricCharge]")
 {
     constexpr double fromGravity = 0.66743;
-    constexpr double fromElectrostatic = 0.9001976419224258;
+    constexpr double fromElectrostatic = -0.9001976419224258;
     constexpr double total = fromGravity + fromElectrostatic;
 
     ElectricCharge charge1(1e5, 1e-5);
