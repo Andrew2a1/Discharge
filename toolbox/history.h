@@ -24,7 +24,7 @@ public:
     }
 
     bool hasNext() const {
-        return currentIndex < history.size() - 1;
+        return currentIndex < static_cast<int>(history.size()) - 1;
     }
 
     bool hasPrevious() const {
