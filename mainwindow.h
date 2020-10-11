@@ -6,6 +6,7 @@
 #include "physical/PhysicalObjectPtr.h"
 #include "gui/simulationwidget.h"
 #include "gui/copymanager.h"
+#include "gui/prototypemanager.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -18,6 +19,7 @@ class MainWindow : public QMainWindow
 private:
     Ui::MainWindow *ui;
     CopyManager *copyManager;
+    PrototypeManager *prototypeManager;
 
 public:
     MainWindow(QWidget *parent = nullptr);

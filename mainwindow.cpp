@@ -28,6 +28,10 @@ MainWindow::MainWindow(QWidget *parent)
     copyManager = new CopyManager(this);
     ui->simulation->setCopyManager(copyManager);
 
+    prototypeManager = new PrototypeManager(this);
+    ui->simulation->setPrototypeManager(prototypeManager);
+    createGraphicObjects();
+
     configureTabWidget();
 
     connect(ui->action_Exit, &QAction::triggered, this, &MainWindow::close);
@@ -40,8 +44,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionAbout_Discharge, &QAction::triggered, this, &MainWindow::showAbout);
 
     connect(ui->menu_Edit, &QMenu::aboutToShow, this, &MainWindow::updateActionsEnabled);
-
-    createGraphicObjects();
 }
 
 MainWindow::~MainWindow()
@@ -127,8 +129,10 @@ void MainWindow::createPhysical()
     PhysicalObjectPtr phys(new PhysicalObject(1e12));
     setTo2D(phys);
 
-    PhysicalGraphicObject *physicalGraphic = new PhysicalGraphicObject(phys);
+    GraphicObjectPtr physicalGraphic(new PhysicalGraphicObject(phys));
+
     physicals->addWidget(new DraggableGraphic(physicalGraphic, this));
+    prototypeManager->add("Mass", physicalGraphic);
 }
 
 void MainWindow::createElectrostatic()
@@ -144,13 +148,17 @@ void MainWindow::createElectrostatic()
     setTo2D(electricPlus);
     setTo2D(electricMinus);
 
-    ElectrostaticGraphicObject *neutral = new ElectrostaticGraphicObject(electricNeutral);
-    ElectrostaticGraphicObject *plus = new ElectrostaticGraphicObject(electricPlus);
-    ElectrostaticGraphicObject *minus = new ElectrostaticGraphicObject(electricMinus);
+    GraphicObjectPtr neutral(new ElectrostaticGraphicObject(electricNeutral));
+    GraphicObjectPtr plus(new ElectrostaticGraphicObject(electricPlus));
+    GraphicObjectPtr minus(new ElectrostaticGraphicObject(electricMinus));
 
     electrostatic->addWidget(new DraggableGraphic(neutral, this), 0, 0);
     electrostatic->addWidget(new DraggableGraphic(plus, this), 0, 1);
     electrostatic->addWidget(new DraggableGraphic(minus, this), 1, 0, Qt::AlignTop);
+
+    prototypeManager->add("Neutral", neutral);
+    prototypeManager->add("Plus", plus);
+    prototypeManager->add("Minus", minus);
 }
 
 void MainWindow::setTo2D(const PhysicalObjectPtr &physical)
