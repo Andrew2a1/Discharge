@@ -43,6 +43,11 @@ void SimulationWidget::setCopyManager(CopyManager *manager)
     copyManager = manager;
 }
 
+void SimulationWidget::setPrototypeManager(PrototypeManager *manager)
+{
+    prototypeManager = manager;
+}
+
 void SimulationWidget::addGraphicObject(GraphicObjectPtr object)
 {
     SimulationGraphicObject* simulated = dynamic_cast<SimulationGraphicObject*>(object.get());
@@ -123,14 +128,8 @@ void SimulationWidget::paintEvent(QPaintEvent *event)
 
 void SimulationWidget::keyPressEvent(QKeyEvent *event)
 {
-    QList<GraphicObjectPtr> selected = selection->getSelected();
-
-    if((event->key() == Qt::Key_Delete) && !selected.isEmpty())
-    {
-        for(auto &obj : selected)
-            removeGraphicObject(obj);
-
-        selection->clear();
+    if((event->key() == Qt::Key_Delete)) {
+        handleDelete();
     }
     else if(event->matches(QKeySequence::Copy)) {
         handleCopy();
@@ -151,6 +150,17 @@ void SimulationWidget::keyPressEvent(QKeyEvent *event)
     QWidget::keyPressEvent(event);
 }
 
+void SimulationWidget::handleDelete()
+{
+    if(!selection->isEmpty())
+    {
+        for(auto &obj : selection->getSelected())
+            removeGraphicObject(obj);
+
+        selection->clear();
+    }
+}
+
 void SimulationWidget::handleCopy()
 {
     if(copyManager && !selection->isEmpty())
@@ -168,29 +178,21 @@ void SimulationWidget::handleCut()
 {
     if(copyManager && !selection->isEmpty())
     {
-        copyManager->setCopied(selection->getSelected());
+        QList<GraphicObjectPtr> copied;
 
-        for(auto &obj : selection->getSelected())
+        for(const auto& obj : selection->getSelected()) {
+            copied.append(GraphicObjectPtr(obj->clone()));
             removeGraphicObject(obj);
+        }
 
+        copyManager->setCopied(copied);
         selection->clear();
     }
 }
 
 void SimulationWidget::handlePaste()
 {
-    if(copyManager && !copyManager->isEmpty())
-    {
-        selection->clear();
-
-        for(auto &obj : copyManager->getCopied())
-        {
-            GraphicObjectPtr added(obj->clone());
-
-            addGraphicObject(added);
-            selection->add(added);
-        }
-    }
+    pasteTranslated();
 }
 
 void SimulationWidget::undo()
@@ -260,13 +262,9 @@ void SimulationWidget::mousePressEvent(QMouseEvent *event)
     }
     else if(event->buttons() & Qt::RightButton)
     {
-        GraphicObjectPtr graphic = getObjectAt(toSimPosition(clickedPoint));
         closeAttributeEdit();
-
-        selection->clear();
-
-        if(graphic)
-            createAttributeEdit(graphic);
+        if(!selection->contains(toSimPosition(clickedPoint)))
+            selection->clear();
     }
 
     updateView();
@@ -299,6 +297,53 @@ void SimulationWidget::mouseReleaseEvent(QMouseEvent *event)
     updateView();
 
     QWidget::mouseReleaseEvent(event);
+}
+
+void SimulationWidget::contextMenuEvent(QContextMenuEvent *event)
+{
+    GraphicObjectPtr graphic = getObjectAt(toSimPosition(clickedPoint));
+    QMenu *contextMenu = new QMenu(this);
+
+    if(graphic)
+    {
+        contextMenu->addAction("Edit", [=](){createAttributeEdit(graphic);});
+        contextMenu->addSeparator();
+
+        contextMenu->addAction("Cut", [=](){
+            selection->add(graphic);
+            handleCut();
+        });
+
+        contextMenu->addAction("Copy", [=](){
+            selection->add(graphic);
+            handleCopy();
+            selection->clear();
+        });
+
+        contextMenu->addSeparator();
+        contextMenu->addAction("Delete", [=](){
+            selection->add(graphic);
+            handleDelete();
+        });
+    }
+    else
+    {
+        QMenu *addMenu = contextMenu->addMenu("Add");
+
+        fillAddMenu(addMenu);
+
+        if(hasPasteData()) {
+            contextMenu->addSeparator();
+            contextMenu->addAction("Paste", this, &SimulationWidget::handlePaste);
+            contextMenu->addAction("Paste here", [=](){
+                pasteTranslated(toSimPosition(clickedPoint)
+                                -getCenter(copyManager->getCopied()));
+            });
+        }
+    }
+
+    contextMenu->popup(event->globalPos());
+    QWidget::contextMenuEvent(event);
 }
 
 void SimulationWidget::wheelEvent(QWheelEvent *event)
@@ -369,10 +414,59 @@ QPoint SimulationWidget::fromSimPosition(const QPoint &simPos) const
     return simPos * scale + translation;
 }
 
+void SimulationWidget::fillAddMenu(QMenu *addMenu)
+{
+    for(const auto &name : prototypeManager->names())
+    {
+        addMenu->addAction(name, [=](){
+            GraphicObjectPtr obj(prototypeManager->get(name)->clone());
+            addGraphicObject(obj);
+            obj->setPosition(toSimPosition(clickedPoint));
+        });
+    }
+}
+
+void SimulationWidget::pasteTranslated(const QPoint &translation)
+{
+    if(copyManager && !copyManager->isEmpty())
+    {
+        selection->clear();
+
+        for(auto &obj : copyManager->getCopied())
+        {
+            GraphicObjectPtr added(obj->clone());
+            added->setPosition(obj->pos() + translation);
+
+            addGraphicObject(added);
+            selection->add(added);
+        }
+    }
+}
+
 void SimulationWidget::saveCheckpoint()
 {
     saveToHistory();
     ui->timeControl->setCheckpoint(createState());
+}
+
+bool SimulationWidget::hasSelected() const
+{
+    return !selection->isEmpty();
+}
+
+bool SimulationWidget::hasPasteData() const
+{
+    return !copyManager->isEmpty();
+}
+
+bool SimulationWidget::hasHistoryNext() const
+{
+    return ui->historyWidget->hasNext();
+}
+
+bool SimulationWidget::hasHistoryPrevious() const
+{
+    return ui->historyWidget->hasPrevious();
 }
 
 void SimulationWidget::saveToHistory()
@@ -416,13 +510,13 @@ void SimulationWidget::updateView()
     updateGeometry();
 }
 
-QPoint SimulationWidget::getContentCenter() const
+QPoint SimulationWidget::getCenter(const QList<GraphicObjectPtr> &objects) const
 {
     QPoint center;
 
-    for(const auto& graphic : graphicObjects)
+    for(const auto& graphic : objects)
         center += graphic->pos();
-    center /= graphicObjects.size();
+    center /= objects.size();
 
     return center;
 }
@@ -435,7 +529,7 @@ void SimulationWidget::updateZoom(int zoom)
 
 void SimulationWidget::fitToContent()
 {
-    QPoint newTranslation = rect().center() - getContentCenter();
+    QPoint newTranslation = rect().center() - getCenter(graphicObjects);
     translation = newTranslation;
     updateView();
 }

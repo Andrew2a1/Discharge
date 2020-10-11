@@ -19,7 +19,6 @@
 #include "gui/electrostaticgraphicobject.h"
 #include "gui/draggablegraphic.h"
 
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
       ui(new Ui::MainWindow)
@@ -28,6 +27,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     copyManager = new CopyManager(this);
     ui->simulation->setCopyManager(copyManager);
+
+    prototypeManager = new PrototypeManager(this);
+    ui->simulation->setPrototypeManager(prototypeManager);
+    createGraphicObjects();
 
     configureTabWidget();
 
@@ -38,10 +41,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_Copy, &QAction::triggered, ui->simulation, &SimulationWidget::handleCopy);
     connect(ui->action_Cut, &QAction::triggered, ui->simulation, &SimulationWidget::handleCut);
     connect(ui->action_Paste, &QAction::triggered, ui->simulation, &SimulationWidget::handlePaste);
-
     connect(ui->actionAbout_Discharge, &QAction::triggered, this, &MainWindow::showAbout);
 
-    createGraphicObjects();
+    connect(ui->menu_Edit, &QMenu::aboutToShow, this, &MainWindow::updateActionsEnabled);
 }
 
 MainWindow::~MainWindow()
@@ -102,6 +104,18 @@ void MainWindow::showAbout() const
     about->exec();
 }
 
+void MainWindow::updateActionsEnabled()
+{
+    SimulationWidget *active = getActiveSim();
+
+    ui->action_Undo->setEnabled(active->hasHistoryPrevious());
+    ui->action_Redo->setEnabled(active->hasHistoryNext());
+
+    ui->action_Copy->setEnabled(active->hasSelected());
+    ui->action_Cut->setEnabled(active->hasSelected());
+    ui->action_Paste->setEnabled(active->hasPasteData());
+}
+
 void MainWindow::createGraphicObjects()
 {
     createPhysical();
@@ -115,8 +129,10 @@ void MainWindow::createPhysical()
     PhysicalObjectPtr phys(new PhysicalObject(1e12));
     setTo2D(phys);
 
-    PhysicalGraphicObject *physicalGraphic = new PhysicalGraphicObject(phys);
+    GraphicObjectPtr physicalGraphic(new PhysicalGraphicObject(phys));
+
     physicals->addWidget(new DraggableGraphic(physicalGraphic, this));
+    prototypeManager->add("Mass", physicalGraphic);
 }
 
 void MainWindow::createElectrostatic()
@@ -132,13 +148,17 @@ void MainWindow::createElectrostatic()
     setTo2D(electricPlus);
     setTo2D(electricMinus);
 
-    ElectrostaticGraphicObject *neutral = new ElectrostaticGraphicObject(electricNeutral);
-    ElectrostaticGraphicObject *plus = new ElectrostaticGraphicObject(electricPlus);
-    ElectrostaticGraphicObject *minus = new ElectrostaticGraphicObject(electricMinus);
+    GraphicObjectPtr neutral(new ElectrostaticGraphicObject(electricNeutral));
+    GraphicObjectPtr plus(new ElectrostaticGraphicObject(electricPlus));
+    GraphicObjectPtr minus(new ElectrostaticGraphicObject(electricMinus));
 
     electrostatic->addWidget(new DraggableGraphic(neutral, this), 0, 0);
     electrostatic->addWidget(new DraggableGraphic(plus, this), 0, 1);
     electrostatic->addWidget(new DraggableGraphic(minus, this), 1, 0, Qt::AlignTop);
+
+    prototypeManager->add("Neutral", neutral);
+    prototypeManager->add("Plus", plus);
+    prototypeManager->add("Minus", minus);
 }
 
 void MainWindow::setTo2D(const PhysicalObjectPtr &physical)

@@ -2,6 +2,8 @@
 #define SIMULATIONWIDGET_H
 
 #include <QWidget>
+#include <QMenu>
+
 #include <QPoint>
 #include <QList>
 
@@ -13,6 +15,7 @@
 #include "simulationwidgetstate.h"
 
 #include "copymanager.h"
+#include "prototypemanager.h"
 
 namespace Ui {
 class SimulationWidget;
@@ -26,6 +29,7 @@ private:
     Ui::SimulationWidget *ui;
 
     AttributeEditorWidget *attrEditor = nullptr;
+    PrototypeManager *prototypeManager = nullptr;
     CopyManager *copyManager = nullptr;
     SelectionManager *selection;
 
@@ -49,6 +53,7 @@ public:
     ~SimulationWidget();
 
     void setCopyManager(CopyManager *manager);
+    void setPrototypeManager(PrototypeManager *manager);
 
     void addGraphicObject(GraphicObjectPtr object);
     void removeGraphicObject(GraphicObjectPtr object);
@@ -60,6 +65,12 @@ public:
     void restoreState(SimulationWidgetStatePtr state);
 
     void saveCheckpoint();
+
+    bool hasSelected() const;
+    bool hasPasteData() const;
+
+    bool hasHistoryNext() const;
+    bool hasHistoryPrevious() const;
 
 public slots:
     void handleCopy();
@@ -78,6 +89,8 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
 
+    void contextMenuEvent(QContextMenuEvent *event) override;
+
     void wheelEvent(QWheelEvent *event) override;
 
     void dragEnterEvent(QDragEnterEvent *event) override;
@@ -90,16 +103,20 @@ private:
     QPoint toSimPosition(const QPoint &windowPos) const;
     QPoint fromSimPosition(const QPoint &simPos) const;
 
+    void fillAddMenu(QMenu *addMenu);
+    void pasteTranslated(const QPoint &translation = QPoint());
+
     bool selectMultiply() const;
     void clearSelectionIfNotMultiply();
 
-    QPoint getContentCenter() const;
+    QPoint getCenter(const QList<GraphicObjectPtr> &objects) const;
     void saveToHistory();
 
     void createAttributeEdit(GraphicObjectPtr obj);
     void closeAttributeEdit();
 
     void updateView();
+    void handleDelete();
 
 private slots:
     void updateZoom(int zoom);

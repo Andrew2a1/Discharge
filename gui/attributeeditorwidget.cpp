@@ -49,10 +49,10 @@ void AttributeEditorWidget::addDoubleAttr(const QString &name,
 {
     QDoubleSpinBox *spinBox = new QDoubleSpinBox(this);
 
-    spinBox->setMinimum(-1e18);
-    spinBox->setMaximum(1e18);
-    spinBox->setSingleStep(0.1);
-    spinBox->setDecimals(18);
+    spinBox->setMinimum(-1e16);
+    spinBox->setMaximum(1e16);
+    spinBox->setSingleStep(0.125);
+    spinBox->setDecimals(15);
     spinBox->setValue(defaultValue);
 
     connect(spinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), callback);
