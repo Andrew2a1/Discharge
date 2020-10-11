@@ -30,12 +30,19 @@ public:
     void save(SimulationWidgetStatePtr state);
     void setMaxHistoryLen(unsigned max);
 
+    bool hasNext() const;
+    bool hasPrevious() const;
+
+signals:
+    void undoEnabled(bool);
+    void redoEnabled(bool);
+
 public slots:
     void undo();
     void redo();
 
 private:
-    void updateButtons();
+    void updateStatus();
 
 };
 
