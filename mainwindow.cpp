@@ -19,6 +19,7 @@
 #include "gui/electrostaticgraphicobject.h"
 #include "gui/draggablegraphic.h"
 
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -38,8 +39,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_Copy, &QAction::triggered, ui->simulation, &SimulationWidget::handleCopy);
     connect(ui->action_Cut, &QAction::triggered, ui->simulation, &SimulationWidget::handleCut);
     connect(ui->action_Paste, &QAction::triggered, ui->simulation, &SimulationWidget::handlePaste);
-
     connect(ui->actionAbout_Discharge, &QAction::triggered, this, &MainWindow::showAbout);
+
+    connect(ui->menu_Edit, &QMenu::aboutToShow, this, &MainWindow::updateActionsEnabled);
 
     createGraphicObjects();
 }
@@ -100,6 +102,18 @@ void MainWindow::showAbout() const
                                          QMessageBox::Ok,
                                          this->centralWidget());
     about->exec();
+}
+
+void MainWindow::updateActionsEnabled()
+{
+    SimulationWidget *active = getActiveSim();
+
+    ui->action_Undo->setEnabled(active->hasHistoryPrevious());
+    ui->action_Redo->setEnabled(active->hasHistoryNext());
+
+    ui->action_Copy->setEnabled(active->hasSelected());
+    ui->action_Cut->setEnabled(active->hasSelected());
+    ui->action_Paste->setEnabled(active->hasPasteData());
 }
 
 void MainWindow::createGraphicObjects()

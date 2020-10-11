@@ -39,5 +39,6 @@ private slots:
     void removeTab(int idx);
 
     void showAbout() const;
+    void updateActionsEnabled();
 };
 #endif // MAINWINDOW_H
