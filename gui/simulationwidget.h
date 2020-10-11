@@ -24,12 +24,12 @@ class SimulationWidget : public QWidget
 
 private:
     Ui::SimulationWidget *ui;
-    Simulation simulation;
 
     AttributeEditorWidget *attrEditor = nullptr;
     CopyManager *copyManager = nullptr;
     SelectionManager *selection;
 
+    Simulation simulation;
     QList<GraphicObjectPtr> graphicObjects;
 
     QPoint oldMovePos;

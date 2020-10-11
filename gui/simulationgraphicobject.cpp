@@ -32,7 +32,6 @@ void SimulationGraphicObject::draw(QPainter *painter)
     painter->drawText(getBounds(), Qt::AlignCenter ,"m");
 }
 
-
 AttributeEditorWidget *SimulationGraphicObject::createAttributeEditor(QWidget *parent)
 {
     AttributeEditorWidget* attrEdit = GraphicObject::createAttributeEditor(parent);
@@ -69,7 +68,6 @@ AttributeEditorWidget *SimulationGraphicObject::createAttributeEditor(QWidget *p
                                 },
                                 getPhysical()->getVelocity()[i]);
     }
-
 
     return attrEdit;
 }

@@ -48,8 +48,10 @@ void AttributeEditorWidget::addDoubleAttr(const QString &name,
                                           double defaultValue)
 {
     QDoubleSpinBox *spinBox = new QDoubleSpinBox(this);
+
     spinBox->setMinimum(-1e18);
     spinBox->setMaximum(1e18);
+    spinBox->setSingleStep(0.1);
     spinBox->setDecimals(18);
     spinBox->setValue(defaultValue);
 

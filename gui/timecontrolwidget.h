@@ -16,11 +16,10 @@ class TimeControlWidget : public QWidget
 
 private:
     Ui::TimeControlWidget *ui;
+    QTimer *timer;
 
     SimulationWidget *updateTarget = nullptr;
     SimulationWidgetStatePtr checkpoint = nullptr;
-
-    QTimer *timer;
 
     int simApplyTime = 100;
     bool isUpdating = false;

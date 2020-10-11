@@ -1,6 +1,8 @@
 #include "graphicobject.h"
 #include "attributeeditorwidget.h"
+
 #include <QRect>
+#include <QPoint>
 
 void GraphicObject::setPosition(const QPoint &newPosition)
 {

@@ -13,7 +13,7 @@ const QList<GraphicObjectPtr> &SelectionManager::getSelected() const
     return selected;
 }
 
-void SelectionManager::addSelected(const GraphicObjectPtr &graphic)
+void SelectionManager::add(const GraphicObjectPtr &graphic)
 {
     if(!selected.contains(graphic))
         selected.append(graphic);
@@ -23,7 +23,7 @@ void SelectionManager::addFromRect(const QRect &newSeletion)
 {
     for(const auto& graphic : graphicObjects)
         if(newSeletion.contains(graphic->getBounds()))
-            addSelected(graphic);
+            add(graphic);
     selection = newSeletion;
 }
 
@@ -45,12 +45,12 @@ bool SelectionManager::isEmpty() const
     return selected.isEmpty();
 }
 
-const QRect &SelectionManager::getSelection() const
+const QRect &SelectionManager::getRect() const
 {
     return selection;
 }
 
-void SelectionManager::clearSelection()
+void SelectionManager::clear()
 {
     selection = QRect();
     selected.clear();

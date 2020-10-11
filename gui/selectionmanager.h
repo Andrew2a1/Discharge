@@ -22,15 +22,15 @@ public:
 
     const QList<GraphicObjectPtr> &getSelected() const;
 
-    void addSelected(const GraphicObjectPtr &graphic);
+    void add(const GraphicObjectPtr &graphic);
     void addFromRect(const QRect &newSeletion);
 
     bool contains(const QPoint &point) const;
     bool contains(const GraphicObjectPtr &graphic) const;
     bool isEmpty() const;
 
-    const QRect &getSelection() const;
-    void clearSelection();
+    const QRect &getRect() const;
+    void clear();
 };
 
 #endif // SELECTIONMANAGER_H

@@ -65,7 +65,6 @@ QByteArray DraggableGraphic::getDraggableData()
 
     // Send pointer to graphic object
     dataStream.writeRawData((char*)(&graphic), sizeof(graphic));
-
     return itemData;
 }
 

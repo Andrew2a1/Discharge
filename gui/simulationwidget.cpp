@@ -107,7 +107,7 @@ void SimulationWidget::paintEvent(QPaintEvent *event)
     painter.scale(scale, scale);
 
     if(isSelecting)
-        painter.drawRect(selection->getSelection());
+        painter.drawRect(selection->getRect());
 
     for(auto& graphic : graphicObjects)
     {
@@ -130,7 +130,7 @@ void SimulationWidget::keyPressEvent(QKeyEvent *event)
         for(auto &obj : selected)
             removeGraphicObject(obj);
 
-        selection->clearSelection();
+        selection->clear();
     }
     else if(event->matches(QKeySequence::Copy)) {
         handleCopy();
@@ -173,7 +173,7 @@ void SimulationWidget::handleCut()
         for(auto &obj : selection->getSelected())
             removeGraphicObject(obj);
 
-        selection->clearSelection();
+        selection->clear();
     }
 }
 
@@ -181,14 +181,14 @@ void SimulationWidget::handlePaste()
 {
     if(copyManager && !copyManager->isEmpty())
     {
-        selection->clearSelection();
+        selection->clear();
 
         for(auto &obj : copyManager->getCopied())
         {
             GraphicObjectPtr added(obj->clone());
 
             addGraphicObject(added);
-            selection->addSelected(added);
+            selection->add(added);
         }
     }
 }
@@ -255,7 +255,7 @@ void SimulationWidget::mousePressEvent(QMouseEvent *event)
         }
         else if(!selection->contains(toSimPosition(clickedPoint))) {
             clearSelectionIfNotMultiply();
-            selection->addSelected(lastClicked);
+            selection->add(lastClicked);
         }
     }
     else if(event->buttons() & Qt::RightButton)
@@ -263,7 +263,7 @@ void SimulationWidget::mousePressEvent(QMouseEvent *event)
         GraphicObjectPtr graphic = getObjectAt(toSimPosition(clickedPoint));
         closeAttributeEdit();
 
-        selection->clearSelection();
+        selection->clear();
 
         if(graphic)
             createAttributeEdit(graphic);
@@ -276,7 +276,7 @@ void SimulationWidget::mousePressEvent(QMouseEvent *event)
 void SimulationWidget::clearSelectionIfNotMultiply()
 {
     if(!selectMultiply())
-        selection->clearSelection();
+        selection->clear();
 }
 
 bool SimulationWidget::selectMultiply() const
