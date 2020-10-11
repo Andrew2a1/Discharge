@@ -375,6 +375,26 @@ void SimulationWidget::saveCheckpoint()
     ui->timeControl->setCheckpoint(createState());
 }
 
+bool SimulationWidget::hasSelected() const
+{
+    return !selection->isEmpty();
+}
+
+bool SimulationWidget::hasPasteData() const
+{
+    return !copyManager->isEmpty();
+}
+
+bool SimulationWidget::hasHistoryNext() const
+{
+    return ui->historyWidget->hasNext();
+}
+
+bool SimulationWidget::hasHistoryPrevious() const
+{
+    return ui->historyWidget->hasPrevious();
+}
+
 void SimulationWidget::saveToHistory()
 {
     ui->historyWidget->save(createState());

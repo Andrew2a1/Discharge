@@ -61,6 +61,12 @@ public:
 
     void saveCheckpoint();
 
+    bool hasSelected() const;
+    bool hasPasteData() const;
+
+    bool hasHistoryNext() const;
+    bool hasHistoryPrevious() const;
+
 public slots:
     void handleCopy();
     void handleCut();
