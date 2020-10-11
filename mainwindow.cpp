@@ -19,8 +19,6 @@
 #include "gui/electrostaticgraphicobject.h"
 #include "gui/draggablegraphic.h"
 
-#include <QDebug>
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
       ui(new Ui::MainWindow)
