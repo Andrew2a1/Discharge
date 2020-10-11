@@ -10,7 +10,7 @@
 
 #include <QDebug>
 
-DraggableGraphic::DraggableGraphic(GraphicObject *graphic, QWidget *parent) :
+DraggableGraphic::DraggableGraphic(GraphicObjectPtr graphic, QWidget *parent) :
     QWidget(parent),
     graphic(graphic),
     pixmap(graphic->getBounds().adjusted(-4, -4, 4, 4).size())
@@ -21,11 +21,6 @@ DraggableGraphic::DraggableGraphic(GraphicObject *graphic, QWidget *parent) :
     preview->setPixmap(pixmap);
 
     createLayout();
-}
-
-DraggableGraphic::~DraggableGraphic()
-{
-    delete graphic;
 }
 
 void DraggableGraphic::createPixmap()

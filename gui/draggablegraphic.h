@@ -5,22 +5,20 @@
 #include <QLabel>
 #include <QPixmap>
 
-class GraphicObject;
+#include "graphicobject.h"
 
 class DraggableGraphic : public QWidget
 {
     Q_OBJECT
 
 private:
-    GraphicObject *graphic;
+    GraphicObjectPtr graphic;
     QLabel *preview;
     QPixmap pixmap;
 
 public:
-    explicit DraggableGraphic(GraphicObject *graphic,
+    explicit DraggableGraphic(GraphicObjectPtr graphic,
                               QWidget *parent = nullptr);
-
-    ~DraggableGraphic();
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
