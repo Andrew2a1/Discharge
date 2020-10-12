@@ -3,10 +3,11 @@
 
 #include <list>
 #include "PhysicalObjectPtr.h"
+#include "toolbox/Savable.h"
 
 class SimulationState;
 
-class Simulation
+class Simulation : public Savable
 {
 private:
     std::list<PhysicalObjectPtr> subjects;
@@ -22,6 +23,10 @@ public:
 
     SimulationState *saveState() const;
     void restoreState(SimulationState *simulationState);
+
+    virtual unsigned char typeID() const override;
+    virtual SavableData* save() const override;
+    virtual bool restore(SavableData *data) override;
 };
 
 #endif // SIMULATION_H

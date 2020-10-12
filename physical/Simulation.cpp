@@ -1,7 +1,9 @@
 #include "Simulation.h"
-#include "PhysicalObject.h"
 #include "SimulationState.h"
+#include "PhysicalObject.h"
+#include "ElectricCharge.h"
 
+#include "toolbox/SavableData.h"
 #include <vector>
 
 void Simulation::clearSubjects()
@@ -88,4 +90,54 @@ void Simulation::restoreState(SimulationState *simulationState)
             addSubject(saved);
         }
     }
+}
+
+unsigned char Simulation::typeID() const
+{
+    return 1;
+}
+
+SavableData *Simulation::save() const
+{
+    SavableData *savable = Savable::save();
+    SavableData *objData;
+
+    for(const auto &subject : subjects)
+    {
+        objData = subject->save();
+        savable->add(*objData);
+        delete objData;
+    }
+
+    return savable;
+}
+
+bool Simulation::restore(SavableData *data)
+{
+    if(!Savable::restore(data))
+        return false;
+
+    PhysicalObjectPtr prototypes[2] = {
+          PhysicalObjectPtr(new PhysicalObject),
+          PhysicalObjectPtr(new ElectricCharge)
+    };
+
+    clearSubjects();
+
+    while(!data->atEnd())
+    {
+        const char id = data->getRaw()[data->pos()];
+
+        for(unsigned i = 0; i < sizeof(prototypes)/sizeof(*prototypes); ++i)
+        {
+            if(id == prototypes[i]->typeID())
+            {
+                prototypes[i]->restore(data);
+                addSubject(PhysicalObjectPtr(prototypes[i]->clone()));
+                break;
+            }
+        }
+    }
+
+    return true;
 }
