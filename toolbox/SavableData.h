@@ -10,17 +10,24 @@ class SavableData
 {
 private:
     std::vector<char> data;
+    unsigned cursor = 0;
 
 public:
     SavableData(unsigned reserveSize = 0);
     void reserve(unsigned length);
 
-    void add(const char *newData, unsigned size);
     void add(char byte);
+    void add(const char *newData, unsigned size);
     void add(const SavableData &other);
 
-    const char *getRaw(unsigned start = 0) const;
-    
+    const char *getRaw() const;
+    unsigned read(char *destination, int maxAmount = -1);
+    char read();
+
+    unsigned pos() const;
+    void seek(unsigned pos);
+    bool atEnd() const;
+
     unsigned size() const;
     void clear();
 };

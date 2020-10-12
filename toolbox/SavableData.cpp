@@ -27,9 +27,41 @@ void SavableData::add(const SavableData &other)
     this->add(other.getRaw(), other.size());
 }
 
-const char *SavableData::getRaw(unsigned start) const
+const char *SavableData::getRaw() const
 {
-    return data.data() + start;
+    return data.data();
+}
+
+char SavableData::read()
+{
+    if(atEnd())
+        return data.back();
+    return data[cursor++];
+}
+
+unsigned SavableData::read(char *destination, int maxAmount)
+{
+    unsigned readAmount = 0;
+
+    while(maxAmount-- && !atEnd())
+        destination[readAmount++] = data[cursor++];
+
+    return readAmount;
+}
+
+unsigned SavableData::pos() const
+{
+    return cursor;
+}
+
+void SavableData::seek(unsigned pos)
+{
+    cursor = pos;
+}
+
+bool SavableData::atEnd() const
+{
+    return !(cursor < size());
 }
 
 unsigned SavableData::size() const
