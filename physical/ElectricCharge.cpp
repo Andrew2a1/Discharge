@@ -36,6 +36,16 @@ Vector<double> ElectricCharge::calculateForce(const PhysicalObject *other) const
     return force + PhysicalObject::calculateForce(other);
 }
 
+PhysicalObject *ElectricCharge::clone() const
+{
+    return new ElectricCharge(*this);
+}
+
+unsigned char ElectricCharge::typeID() const
+{
+    return 3;
+}
+
 SavableData *ElectricCharge::save() const 
 {
     SavableData *savable = PhysicalObject::save();
@@ -43,12 +53,11 @@ SavableData *ElectricCharge::save() const
     return savable;
 }
 
-unsigned ElectricCharge::restore(const SavableData *data)
+bool ElectricCharge::restore(SavableData *data)
 {
-    unsigned offset = PhysicalObject::restore(data);
+    if(!PhysicalObject::restore(data))
+        return false;
 
-    std::memcpy(&charge, data->getRaw(offset), sizeof(charge));
-    offset += sizeof(charge);
-
-    return offset;
+    data->read(reinterpret_cast<char*>(&charge), sizeof(charge));
+    return true;
 }

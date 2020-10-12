@@ -69,10 +69,22 @@ Vector<double> PhysicalObject::calculateForce(const PhysicalObject *other) const
     return force;
 }
 
+PhysicalObject *PhysicalObject::clone() const
+{
+    return new PhysicalObject(*this);
+}
+
+unsigned char PhysicalObject::typeID() const
+{
+    return 2;
+}
+
 SavableData *PhysicalObject::save() const
 {
     const unsigned total = sizeof(mass) + sizeof(position) + sizeof(velocity);
-    SavableData *savable = new SavableData(total);
+
+    SavableData *savable = Savable::save();
+    savable->reserve(savable->size() + total);
 
     savable->add(PackObject(mass));
     saveVector(position, savable);
@@ -81,16 +93,17 @@ SavableData *PhysicalObject::save() const
     return savable;
 }
 
-unsigned PhysicalObject::restore(const SavableData *data)
+bool PhysicalObject::restore(SavableData *data)
 {
-    unsigned offset = 0;
+    if(!Savable::restore(data))
+        return false;
 
-    std::memcpy(&mass, data->getRaw(), sizeof(mass));
-    offset += sizeof(mass);
+    data->read(reinterpret_cast<char*>(&mass), sizeof(mass));
 
-    position = restoreVector(data, offset);
-    velocity = restoreVector(data, offset);
-    return offset;
+    position = restoreVector(data);
+    velocity = restoreVector(data);
+
+    return true;
 }
 
 void PhysicalObject::saveVector(const Vector<double> &vect, SavableData *savable) const
@@ -101,16 +114,12 @@ void PhysicalObject::saveVector(const Vector<double> &vect, SavableData *savable
         savable->add(PackObject(vect[i]));
 }
 
-Vector<double> PhysicalObject::restoreVector(const SavableData *savable, unsigned &offset) const
+Vector<double> PhysicalObject::restoreVector(SavableData *savable) const
 {
-    Vector<double> result(*savable->getRaw(offset));
-    offset += 1;
+    Vector<double> result(savable->read());
 
     for(int i = 0; i < velocity.size(); ++i)
-    {
-        result[i] = *(double*)(savable->getRaw(offset));
-        offset += sizeof(double);
-    }
+        savable->read(reinterpret_cast<char*>(&(result[i])), sizeof(double));
 
     return result;
 }
