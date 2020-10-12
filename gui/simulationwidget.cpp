@@ -208,7 +208,6 @@ void SimulationWidget::redo()
 void SimulationWidget::mouseMoveEvent(QMouseEvent *event)
 {
     QPoint delta = event->pos() - clickedPoint;
-    shouldSave = true;
 
     if(isTranslating) {
         translation = oldTranslation + delta;
@@ -220,9 +219,7 @@ void SimulationWidget::mouseMoveEvent(QMouseEvent *event)
     else if (!selection->isEmpty() && isMoving) {
         for(auto &obj : selection->getSelected())
             obj->setPosition(obj->pos() + (event->pos() - oldMovePos)/scale);
-    }
-    else {
-        shouldSave = false;
+        shouldSave = true;
     }
 
     oldMovePos = event->pos();
@@ -329,7 +326,6 @@ void SimulationWidget::contextMenuEvent(QContextMenuEvent *event)
     else
     {
         QMenu *addMenu = contextMenu->addMenu("Add");
-
         fillAddMenu(addMenu);
 
         if(hasPasteData()) {

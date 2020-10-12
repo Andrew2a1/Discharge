@@ -27,6 +27,9 @@ public:
     virtual unsigned char typeID() const override;
     virtual SavableData* save() const override;
     virtual bool restore(SavableData *data) override;
+
+private:
+    void restoreObject(const PhysicalObjectPtr &obj, SimulationState *simState);
 };
 
 #endif // SIMULATION_H

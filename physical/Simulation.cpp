@@ -73,7 +73,7 @@ void Simulation::restoreState(SimulationState *simulationState)
     {
         if (simulationState->isSaved(*iter))
         {
-            (*iter)->restore(simulationState->getData(*iter));
+            restoreObject(*iter, simulationState);
             ++iter;
         }
         else
@@ -86,10 +86,17 @@ void Simulation::restoreState(SimulationState *simulationState)
     {
         if (std::find(subjects.begin(), subjects.end(), saved) == subjects.end())
         {
-            saved->restore(simulationState->getData(saved));
+            restoreObject(saved, simulationState);
             addSubject(saved);
         }
     }
+}
+
+void Simulation::restoreObject(const PhysicalObjectPtr &obj, SimulationState *simState)
+{
+    SavableData *savable = simState->getData(obj);
+    obj->restore(savable);
+    savable->seek(0);
 }
 
 unsigned char Simulation::typeID() const
