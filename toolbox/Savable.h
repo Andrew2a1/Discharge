@@ -6,8 +6,9 @@ class SavableData;
 class Savable
 {
 public:
-    virtual SavableData* save() const = 0;
-    virtual unsigned restore(const SavableData *data) = 0;
+    virtual unsigned char typeID() const = 0;
+    virtual SavableData *save() const;
+    virtual bool restore(SavableData *data);
 };
 
 #endif // SAVABLE_H
