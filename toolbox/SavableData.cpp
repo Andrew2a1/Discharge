@@ -10,13 +10,13 @@ void SavableData::reserve(unsigned length)
     data.reserve(length);
 }
 
-void SavableData::add(const char *newData, unsigned size)
+void SavableData::add(const unsigned char *newData, unsigned size)
 {
     for(unsigned i = 0; i < size; ++i)
         data.push_back(newData[i]);
 }
 
-void SavableData::add(char byte)
+void SavableData::add(unsigned char byte)
 {
     data.push_back(byte);
 }
@@ -27,19 +27,19 @@ void SavableData::add(const SavableData &other)
     this->add(other.getRaw(), other.size());
 }
 
-const char *SavableData::getRaw() const
+const unsigned char *SavableData::getRaw() const
 {
     return data.data();
 }
 
-char SavableData::read()
+unsigned char SavableData::read()
 {
     if(atEnd())
         return data.back();
     return data[cursor++];
 }
 
-unsigned SavableData::read(char *destination, int maxAmount)
+unsigned SavableData::read(unsigned char *destination, int maxAmount)
 {
     unsigned readAmount = 0;
 
@@ -71,5 +71,6 @@ unsigned SavableData::size() const
 
 void SavableData::clear()
 {
+    cursor = 0;
     data.clear();
 }

@@ -3,26 +3,26 @@
 
 #include <vector>
 
-#define PackObject(obj) (const char*)((&obj)), (sizeof((obj)))
-#define PackObjectPtr(obj) (const char*)((obj)), (sizeof(*(obj)))
+#define RawBytesConst(obj) (reinterpret_cast<const unsigned char*>((obj)))
+#define RawBytes(obj) (reinterpret_cast<unsigned char*>((obj)))
 
 class SavableData
 {
 private:
-    std::vector<char> data;
+    std::vector<unsigned char> data;
     unsigned cursor = 0;
 
 public:
     SavableData(unsigned reserveSize = 0);
     void reserve(unsigned length);
 
-    void add(char byte);
-    void add(const char *newData, unsigned size);
+    void add(unsigned char byte);
+    void add(const unsigned char *newData, unsigned size);
     void add(const SavableData &other);
 
-    const char *getRaw() const;
-    unsigned read(char *destination, int maxAmount = -1);
-    char read();
+    const unsigned char *getRaw() const;
+    unsigned read(unsigned char *destination, int maxAmount = -1);
+    unsigned char read();
 
     unsigned pos() const;
     void seek(unsigned pos);
