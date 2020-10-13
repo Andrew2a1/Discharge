@@ -4,8 +4,21 @@
 
 #include <cstring>
 
+PhysicalObject::PhysicalObject(const PhysicalObject &other) :
+    mass(other.mass),
+    position(other.position),
+    velocity(other.velocity)
+{
+
+}
+
 PhysicalObject::PhysicalObject(double mass) :
     mass(mass)
+{
+
+}
+
+PhysicalObject::~PhysicalObject()
 {
 
 }
@@ -69,28 +82,28 @@ Vector<double> PhysicalObject::calculateForce(const PhysicalObject *other) const
     return force;
 }
 
+PhysicalObject *PhysicalObject::clone() const
+{
+    return new PhysicalObject(*this);
+}
+
+unsigned char PhysicalObject::typeID() const
+{
+    return 2;
+}
+
 SavableData *PhysicalObject::save() const
 {
     const unsigned total = sizeof(mass) + sizeof(position) + sizeof(velocity);
-    SavableData *savable = new SavableData(total);
 
-    savable->add(PackObject(mass));
+    SavableData *savable = Savable::save();
+    savable->reserve(savable->size() + total);
+
+    savable->add(RawBytesConst(&mass), sizeof(mass));
     saveVector(position, savable);
     saveVector(velocity, savable);
 
     return savable;
-}
-
-unsigned PhysicalObject::restore(const SavableData *data)
-{
-    unsigned offset = 0;
-
-    std::memcpy(&mass, data->getRaw(), sizeof(mass));
-    offset += sizeof(mass);
-
-    position = restoreVector(data, offset);
-    velocity = restoreVector(data, offset);
-    return offset;
 }
 
 void PhysicalObject::saveVector(const Vector<double> &vect, SavableData *savable) const
@@ -98,19 +111,28 @@ void PhysicalObject::saveVector(const Vector<double> &vect, SavableData *savable
     savable->add(vect.size());
 
     for(int i = 0; i < vect.size(); ++i)
-        savable->add(PackObject(vect[i]));
+        savable->add(RawBytesConst(&(vect[i])), sizeof(double));
 }
 
-Vector<double> PhysicalObject::restoreVector(const SavableData *savable, unsigned &offset) const
+bool PhysicalObject::restore(SavableData *data)
 {
-    Vector<double> result(*savable->getRaw(offset));
-    offset += 1;
+    if(!Savable::restore(data))
+        return false;
+
+    data->read(RawBytes(&mass), sizeof(mass));
+
+    position = restoreVector(data);
+    velocity = restoreVector(data);
+
+    return true;
+}
+
+Vector<double> PhysicalObject::restoreVector(SavableData *savable) const
+{
+    Vector<double> result(savable->read());
 
     for(int i = 0; i < velocity.size(); ++i)
-    {
-        result[i] = *(double*)(savable->getRaw(offset));
-        offset += sizeof(double);
-    }
+        savable->read(RawBytes(&(result[i])), sizeof(double));
 
     return result;
 }

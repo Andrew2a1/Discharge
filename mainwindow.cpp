@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include <QMessageBox>
+#include <QFileDialog>
 
 #include <QTabBar>
 #include <QPushButton>
@@ -14,6 +15,9 @@
 #include "physical/PhysicalObject.h"
 #include "physical/ElectricCharge.h"
 #include "physical/PhysicalObjectPtr.h"
+
+#include "toolbox/Savable.h"
+#include "toolbox/SavableData.h"
 
 #include "gui/physicalgraphicobject.h"
 #include "gui/electrostaticgraphicobject.h"
@@ -35,13 +39,17 @@ MainWindow::MainWindow(QWidget *parent)
     configureTabWidget();
 
     connect(ui->action_Exit, &QAction::triggered, this, &MainWindow::close);
-    connect(ui->action_Redo, &QAction::triggered, ui->simulation, &SimulationWidget::redo);
-    connect(ui->action_Undo, &QAction::triggered, ui->simulation, &SimulationWidget::undo);
+    connect(ui->action_Redo, &QAction::triggered, this, &MainWindow::redo);
+    connect(ui->action_Undo, &QAction::triggered, this, &MainWindow::undo);
 
-    connect(ui->action_Copy, &QAction::triggered, ui->simulation, &SimulationWidget::handleCopy);
-    connect(ui->action_Cut, &QAction::triggered, ui->simulation, &SimulationWidget::handleCut);
-    connect(ui->action_Paste, &QAction::triggered, ui->simulation, &SimulationWidget::handlePaste);
+    connect(ui->action_Copy, &QAction::triggered, this, &MainWindow::copy);
+    connect(ui->action_Cut, &QAction::triggered, this, &MainWindow::cut);
+    connect(ui->action_Paste, &QAction::triggered, this, &MainWindow::paste);
     connect(ui->actionAbout_Discharge, &QAction::triggered, this, &MainWindow::showAbout);
+
+    connect(ui->actionSave, &QAction::triggered, [=](){askSaveToFile(true);});
+    connect(ui->actionSave_as, &QAction::triggered, [=](){askSaveToFile(false);});
+    connect(ui->action_Open, &QAction::triggered, this, &MainWindow::askOpenFiles);
 
     connect(ui->menu_Edit, &QMenu::aboutToShow, this, &MainWindow::updateActionsEnabled);
 }
@@ -69,16 +77,19 @@ void MainWindow::configureTabWidget()
     connect(ui->tabWidget, &QTabWidget::tabCloseRequested, this, &MainWindow::removeTab);
 }
 
-void MainWindow::addSimulationTab()
+SimulationWidget *MainWindow::addSimulationTab()
 {
     const QString desc = QString("Sim%1").arg(ui->tabWidget->count() + 1);
     SimulationWidget *simWidget = new SimulationWidget(ui->tabWidget);
 
     simWidget->setCopyManager(copyManager);
+    simWidget->setPrototypeManager(prototypeManager);
     ui->tabWidget->addTab(simWidget, desc);
 
     QTabBar *tabBar = ui->tabWidget->tabBar();
     tabBar->tabButton(0, QTabBar::RightSide)->show();
+
+    return simWidget;
 }
 
 void MainWindow::removeTab(int idx)
@@ -165,5 +176,106 @@ void MainWindow::setTo2D(const PhysicalObjectPtr &physical)
 {
     physical->setPosition(Vector<>({0, 0}));
     physical->setVelocity(Vector<>({0, 0}));
+}
+
+bool MainWindow::openFile(QString filename)
+{
+    QFile simFile(filename);
+    SavableData savable;
+
+    simFile.open(QIODevice::ReadOnly);
+
+    if(!(simFile.read(4) == QString("DSIM").toLocal8Bit()))
+        return false;
+
+    QByteArray data = simFile.readAll();
+
+    savable.reserve(data.size());
+    savable.add(RawBytesConst(data.data()), data.size());
+
+    SimulationWidget *added = addSimulationTab();
+    added->restore(&savable);
+
+    simFile.close();
+    return true;
+}
+
+bool MainWindow::saveToFile(QString filename)
+{
+    SavableData *savable = getActiveSim()->save();
+
+    QFile simFile(filename);
+    simFile.open(QIODevice::WriteOnly);
+
+    if(!simFile.isWritable())
+        return false;
+
+    simFile.write("DSIM", 4);
+    simFile.write((const char*)(savable->getRaw()), savable->size());
+    simFile.close();
+
+    delete savable;
+    return true;
+}
+
+void MainWindow::redo()
+{
+    SimulationWidget *active = getActiveSim();
+    active->redo();
+}
+
+void MainWindow::undo()
+{
+    SimulationWidget *active = getActiveSim();
+    active->undo();
+}
+
+void MainWindow::copy()
+{
+    SimulationWidget *active = getActiveSim();
+    active->handleCopy();
+}
+
+void MainWindow::cut()
+{
+    SimulationWidget *active = getActiveSim();
+    active->handleCut();
+}
+
+void MainWindow::paste()
+{
+    SimulationWidget *active = getActiveSim();
+    active->handlePaste();
+}
+
+void MainWindow::askSaveToFile(bool override)
+{
+    QString name;
+
+    if(lastSaved.isEmpty() || !override) {
+        name = QFileDialog::getSaveFileName(this, tr("Open simulation file"),
+                                            ".", tr("Discharge simulation (*.dsim)"));
+    }
+    else {
+        name = lastSaved;
+    }
+
+    if(!name.isEmpty())
+    {
+        saveToFile(name);
+        lastSaved = name;
+    }
+}
+
+void MainWindow::askOpenFiles()
+{
+    QStringList filenames;
+    filenames = QFileDialog::getOpenFileNames(this, tr("Open simulation file"),
+                                                ".", tr("Discharge simulation (*.dsim)"));
+
+    for(const auto &name: filenames)
+    {
+        openFile(name);
+    }
 }
 

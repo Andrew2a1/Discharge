@@ -7,6 +7,7 @@
 #include "../physical/SimulationState.h"
 
 #include "physical/PhysicalObjectPtr.h"
+#include "toolbox/SavableData.h"
 
 TEST_CASE("Simulation applying time", "[Simulation]")
 {
@@ -62,9 +63,8 @@ TEST_CASE("Simulation save and restore state", "[Simulation]")
     {
         state = simulation.saveState();
 
-        el->setCharge(120);
         simulation.removeSubject(el);
-
+        el->setCharge(120);
         obj->setMass(50);
         el2->setVelocity(Vector<double>({10, 1, 1}));
 
@@ -74,6 +74,15 @@ TEST_CASE("Simulation save and restore state", "[Simulation]")
         CHECK(obj->getMass() == 2.0);
         CHECK(el->getCharge() == 1.0);
         CHECK(el2->getVelocity() == Vector<double>({0, 0, 0}));
+    }
+
+    SECTION("Without restore deleted")
+    {
+        simulation.removeSubject(el);
+        el->setCharge(120);
+
+        CHECK(el->getCharge() == 120.0);
+        simulation.addSubject(el);
     }
 
     SECTION("Restore without some item")
@@ -87,4 +96,36 @@ TEST_CASE("Simulation save and restore state", "[Simulation]")
 
         CHECK(simulation.getSubjects().size() == 3);
     }
+}
+
+TEST_CASE("Simulation save and restore from raw data", "[Simulation]")
+{
+    Simulation simulation;
+    SavableData *data;
+
+    PhysicalObjectPtr obj(new PhysicalObject(2.0));
+    ElectricChargePtr el(new ElectricCharge(1.0, 1.0));
+    ElectricChargePtr el2(new ElectricCharge(1.0, 2.0));
+
+    simulation.addSubject(obj);
+    simulation.addSubject(el);
+    simulation.addSubject(el2);
+
+    data = simulation.save();
+
+    simulation.removeSubject(obj);
+    el2->setCharge(3.0);
+
+    CHECK(simulation.restore(data));
+    delete data;
+
+    CHECK(simulation.getSubjects().size() == 3);
+
+    ElectricCharge *el2_restored = dynamic_cast<ElectricCharge*>(
+        simulation.getSubjects().back().get()
+    );
+
+    REQUIRE(el2_restored);
+    CHECK(el2_restored->getCharge() == 2);
+    
 }

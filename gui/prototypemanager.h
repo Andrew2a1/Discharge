@@ -22,7 +22,6 @@ public:
     QList<QString> names() const;
 
     void add(const QString &name, const GraphicObjectPtr &object);
-
     bool isValid(const QString &name) const;
 };
 

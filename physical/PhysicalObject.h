@@ -12,8 +12,9 @@ private:
     Vector<double> velocity;
 
 public:
+    PhysicalObject(const PhysicalObject &other);
     PhysicalObject(double mass = 1.0);
-    virtual ~PhysicalObject() = default;
+    virtual ~PhysicalObject();
 
     double getMass() const;
     const Vector<double> &getPosition() const;
@@ -27,12 +28,15 @@ public:
     virtual void applyForce(const Vector<double> &force, double dt);
     virtual Vector<double> calculateForce(const PhysicalObject *other) const;
 
+    virtual PhysicalObject *clone() const;
+
+    virtual unsigned char typeID() const override;
     virtual SavableData* save() const override;
-    virtual unsigned restore(const SavableData *data) override;
+    virtual bool restore(SavableData *data) override;
 
 private:
     void saveVector(const Vector<double> &vect, SavableData *savable) const;
-    Vector<double> restoreVector(const SavableData *savable, unsigned &offset) const;
+    Vector<double> restoreVector(SavableData *savable) const;
 };
 
 #endif // PHYSICALOBJECT_H

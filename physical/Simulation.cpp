@@ -1,7 +1,11 @@
 #include "Simulation.h"
-#include "PhysicalObject.h"
 #include "SimulationState.h"
 
+#include "PhysicalObject.h"
+#include "ElectricCharge.h"
+#include "PhysicalObjectPtr.h"
+
+#include "toolbox/SavableData.h"
 #include <vector>
 
 void Simulation::clearSubjects()
@@ -37,12 +41,12 @@ void Simulation::applyTime(double dt)
     }
 }
 
-void Simulation::addSubject(PhysicalObjectPtr subject)
+void Simulation::addSubject(const PhysicalObjectPtr &subject)
 {
     subjects.push_back(subject);
 }
 
-void Simulation::removeSubject(PhysicalObjectPtr subject)
+void Simulation::removeSubject(const PhysicalObjectPtr &subject)
 {
     subjects.remove(subject);
 }
@@ -71,7 +75,7 @@ void Simulation::restoreState(SimulationState *simulationState)
     {
         if (simulationState->isSaved(*iter))
         {
-            (*iter)->restore(simulationState->getData(*iter));
+            restoreObject(*iter, simulationState);
             ++iter;
         }
         else
@@ -84,8 +88,75 @@ void Simulation::restoreState(SimulationState *simulationState)
     {
         if (std::find(subjects.begin(), subjects.end(), saved) == subjects.end())
         {
-            saved->restore(simulationState->getData(saved));
+            restoreObject(saved, simulationState);
             addSubject(saved);
         }
     }
+}
+
+void Simulation::restoreObject(const PhysicalObjectPtr &obj, SimulationState *simState)
+{
+    SavableData *savable = simState->getData(obj);
+    obj->restore(savable);
+    savable->seek(0);
+}
+
+unsigned char Simulation::typeID() const
+{
+    return 1;
+}
+
+SavableData *Simulation::save() const
+{
+    SavableData *savable = Savable::save();
+    SavableData *objData;
+
+    for(const auto &subject : subjects)
+    {
+        objData = subject->save();
+        savable->add(*objData);
+        delete objData;
+    }
+
+    return savable;
+}
+
+bool Simulation::restore(SavableData *data)
+{
+    if(!Savable::restore(data))
+        return false;
+
+    std::list<PhysicalObjectPtr> prototypes = {
+          PhysicalObjectPtr(new PhysicalObject),
+          PhysicalObjectPtr(new ElectricCharge)
+    };
+
+    prototypes.front()->setPosition(Vector<>(2));
+    prototypes.front()->setVelocity(Vector<>(2));
+
+    prototypes.back()->setPosition(Vector<>(2));
+    prototypes.back()->setVelocity(Vector<>(2));
+
+    clearSubjects();
+    while(!data->atEnd())
+    {
+        const char id = data->getRaw()[data->pos()];
+        bool isValid = false;
+
+        for(const auto &prototype: prototypes)
+        {
+            if(id == prototype->typeID())
+            {
+                prototype->restore(data);
+                addSubject(PhysicalObjectPtr(prototype->clone()));
+                isValid = true;
+                break;
+            }
+        }
+
+        if(!isValid)
+            return false;
+    }
+
+    return true;
 }

@@ -3,7 +3,12 @@
 
 #include "simulationgraphicobject.h"
 #include "physicalgraphicobject.h"
+#include "electrostaticgraphicobject.h"
 #include "attributeeditorwidget.h"
+
+#include "physical/PhysicalObject.h"
+#include "physical/ElectricCharge.h"
+#include "physical/PhysicalObjectPtr.h"
 
 #include <QPainter>
 #include <QMouseEvent>
@@ -48,11 +53,11 @@ void SimulationWidget::setPrototypeManager(PrototypeManager *manager)
     prototypeManager = manager;
 }
 
-void SimulationWidget::addGraphicObject(GraphicObjectPtr object)
+void SimulationWidget::addGraphicObject(GraphicObjectPtr object, bool addToSim)
 {
     SimulationGraphicObject* simulated = dynamic_cast<SimulationGraphicObject*>(object.get());
 
-    if(simulated)
+    if(addToSim && simulated)
         simulation.addSubject(simulated->getPhysical());
 
     graphicObjects.append(object);
@@ -78,7 +83,12 @@ void SimulationWidget::removeGraphicObject(GraphicObjectPtr object)
 
 void SimulationWidget::clearScene()
 {
+    closeAttributeEdit();
+    selection->clear();
+
     graphicObjects.clear();
+    simulation.clearSubjects();
+
     saveCheckpoint();
     updateGeometry();
 }
@@ -208,7 +218,6 @@ void SimulationWidget::redo()
 void SimulationWidget::mouseMoveEvent(QMouseEvent *event)
 {
     QPoint delta = event->pos() - clickedPoint;
-    shouldSave = true;
 
     if(isTranslating) {
         translation = oldTranslation + delta;
@@ -220,9 +229,7 @@ void SimulationWidget::mouseMoveEvent(QMouseEvent *event)
     else if (!selection->isEmpty() && isMoving) {
         for(auto &obj : selection->getSelected())
             obj->setPosition(obj->pos() + (event->pos() - oldMovePos)/scale);
-    }
-    else {
-        shouldSave = false;
+        shouldSave = true;
     }
 
     oldMovePos = event->pos();
@@ -329,7 +336,6 @@ void SimulationWidget::contextMenuEvent(QContextMenuEvent *event)
     else
     {
         QMenu *addMenu = contextMenu->addMenu("Add");
-
         fillAddMenu(addMenu);
 
         if(hasPasteData()) {
@@ -467,6 +473,36 @@ bool SimulationWidget::hasHistoryNext() const
 bool SimulationWidget::hasHistoryPrevious() const
 {
     return ui->historyWidget->hasPrevious();
+}
+
+unsigned char SimulationWidget::typeID() const
+{
+    return 127;
+}
+
+SavableData *SimulationWidget::save() const
+{
+    return simulation.save();
+}
+
+bool SimulationWidget::restore(SavableData *data)
+{
+    clearScene();
+
+    if(!simulation.restore(data))
+        return false;
+
+    for(const auto& subject: simulation.getSubjects())
+    {
+        ElectricChargePtr electric(std::dynamic_pointer_cast<ElectricCharge>(subject));
+
+        if(electric)
+            addGraphicObject(GraphicObjectPtr(new ElectrostaticGraphicObject(electric)), false);
+        else
+            addGraphicObject(GraphicObjectPtr(new PhysicalGraphicObject(subject)), false);
+    }
+
+    return true;
 }
 
 void SimulationWidget::saveToHistory()
