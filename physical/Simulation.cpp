@@ -1,7 +1,9 @@
 #include "Simulation.h"
 #include "SimulationState.h"
+
 #include "PhysicalObject.h"
 #include "ElectricCharge.h"
+#include "PhysicalObjectPtr.h"
 
 #include "toolbox/SavableData.h"
 #include <vector>
@@ -39,12 +41,12 @@ void Simulation::applyTime(double dt)
     }
 }
 
-void Simulation::addSubject(PhysicalObjectPtr subject)
+void Simulation::addSubject(const PhysicalObjectPtr &subject)
 {
     subjects.push_back(subject);
 }
 
-void Simulation::removeSubject(PhysicalObjectPtr subject)
+void Simulation::removeSubject(const PhysicalObjectPtr &subject)
 {
     subjects.remove(subject);
 }
@@ -124,26 +126,36 @@ bool Simulation::restore(SavableData *data)
     if(!Savable::restore(data))
         return false;
 
-    PhysicalObjectPtr prototypes[2] = {
+    std::list<PhysicalObjectPtr> prototypes = {
           PhysicalObjectPtr(new PhysicalObject),
           PhysicalObjectPtr(new ElectricCharge)
     };
 
-    clearSubjects();
+    prototypes.front()->setPosition(Vector<>(2));
+    prototypes.front()->setVelocity(Vector<>(2));
 
+    prototypes.back()->setPosition(Vector<>(2));
+    prototypes.back()->setVelocity(Vector<>(2));
+
+    clearSubjects();
     while(!data->atEnd())
     {
         const char id = data->getRaw()[data->pos()];
+        bool isValid = false;
 
-        for(unsigned i = 0; i < sizeof(prototypes)/sizeof(*prototypes); ++i)
+        for(const auto &prototype: prototypes)
         {
-            if(id == prototypes[i]->typeID())
+            if(id == prototype->typeID())
             {
-                prototypes[i]->restore(data);
-                addSubject(PhysicalObjectPtr(prototypes[i]->clone()));
+                prototype->restore(data);
+                addSubject(PhysicalObjectPtr(prototype->clone()));
+                isValid = true;
                 break;
             }
         }
+
+        if(!isValid)
+            return false;
     }
 
     return true;

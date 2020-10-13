@@ -15,8 +15,8 @@ private:
 public:
     void applyTime(double dt);
 
-    void addSubject(PhysicalObjectPtr subject);
-    void removeSubject(PhysicalObjectPtr subject);
+    void addSubject(const PhysicalObjectPtr &subject);
+    void removeSubject(const PhysicalObjectPtr &subject);
     void clearSubjects();
 
     const std::list<PhysicalObjectPtr>& getSubjects() const;
