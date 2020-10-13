@@ -105,7 +105,7 @@ TEST_CASE("Simulation save and restore from raw data", "[Simulation]")
 
     PhysicalObjectPtr obj(new PhysicalObject(2.0));
     ElectricChargePtr el(new ElectricCharge(1.0, 1.0));
-    ElectricChargePtr el2(new ElectricCharge(1.0, 1.0));
+    ElectricChargePtr el2(new ElectricCharge(1.0, 2.0));
 
     simulation.addSubject(obj);
     simulation.addSubject(el);
@@ -116,7 +116,7 @@ TEST_CASE("Simulation save and restore from raw data", "[Simulation]")
     simulation.removeSubject(obj);
     el2->setCharge(3.0);
 
-    simulation.restore(data);
+    CHECK(simulation.restore(data));
     delete data;
 
     CHECK(simulation.getSubjects().size() == 3);
@@ -126,6 +126,6 @@ TEST_CASE("Simulation save and restore from raw data", "[Simulation]")
     );
 
     REQUIRE(el2_restored);
-    CHECK(el2_restored->getCharge() == 1);
+    CHECK(el2_restored->getCharge() == 2);
     
 }
