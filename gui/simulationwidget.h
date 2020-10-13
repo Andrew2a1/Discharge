@@ -7,6 +7,7 @@
 #include <QPoint>
 #include <QList>
 
+#include "toolbox/Savable.h"
 #include "physical/Simulation.h"
 #include "physical/PhysicalObjectPtr.h"
 
@@ -21,7 +22,7 @@ namespace Ui {
 class SimulationWidget;
 }
 
-class SimulationWidget : public QWidget
+class SimulationWidget : public QWidget, public Savable
 {
     Q_OBJECT
 
@@ -55,7 +56,7 @@ public:
     void setCopyManager(CopyManager *manager);
     void setPrototypeManager(PrototypeManager *manager);
 
-    void addGraphicObject(GraphicObjectPtr object);
+    void addGraphicObject(GraphicObjectPtr object, bool addToSim = true);
     void removeGraphicObject(GraphicObjectPtr object);
     void clearScene();
 
@@ -71,6 +72,10 @@ public:
 
     bool hasHistoryNext() const;
     bool hasHistoryPrevious() const;
+
+    virtual unsigned char typeID() const override;
+    virtual SavableData* save() const override;
+    virtual bool restore(SavableData *data) override;
 
 public slots:
     void handleCopy();
