@@ -18,6 +18,8 @@ class MainWindow : public QMainWindow
 
 private:
     Ui::MainWindow *ui;
+    QString lastSaved;
+
     CopyManager *copyManager;
     PrototypeManager *prototypeManager;
 
@@ -36,8 +38,21 @@ private:
 
     void setTo2D(const PhysicalObjectPtr &physical);
 
+    bool openFile(QString filename);
+    bool saveToFile(QString filename);
+
 private slots:
-    void addSimulationTab();
+    void redo();
+    void undo();
+
+    void copy();
+    void cut();
+    void paste();
+
+    void askSaveToFile(bool override = true);
+    void askOpenFiles();
+
+    SimulationWidget *addSimulationTab();
     void removeTab(int idx);
 
     void showAbout() const;
