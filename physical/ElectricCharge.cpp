@@ -2,6 +2,13 @@
 #include "PhysicalConstants.h"
 #include "toolbox/SavableData.h"
 
+ElectricCharge::ElectricCharge(const ElectricCharge &other) :
+    PhysicalObject(other),
+    charge(other.charge)
+{
+
+}
+
 ElectricCharge::ElectricCharge(double mass, double charge) :
     PhysicalObject(mass),
     charge(charge)
@@ -49,7 +56,7 @@ unsigned char ElectricCharge::typeID() const
 SavableData *ElectricCharge::save() const 
 {
     SavableData *savable = PhysicalObject::save();
-    savable->add(PackObject(charge));
+    savable->add(RawBytesConst(&charge), sizeof(charge));
     return savable;
 }
 
@@ -58,6 +65,6 @@ bool ElectricCharge::restore(SavableData *data)
     if(!PhysicalObject::restore(data))
         return false;
 
-    data->read(reinterpret_cast<char*>(&charge), sizeof(charge));
+    data->read(RawBytes(&charge), sizeof(charge));
     return true;
 }

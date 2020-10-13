@@ -12,8 +12,9 @@ private:
     Vector<double> velocity;
 
 public:
+    PhysicalObject(const PhysicalObject &other);
     PhysicalObject(double mass = 1.0);
-    virtual ~PhysicalObject() = default;
+    virtual ~PhysicalObject();
 
     double getMass() const;
     const Vector<double> &getPosition() const;

@@ -4,8 +4,21 @@
 
 #include <cstring>
 
+PhysicalObject::PhysicalObject(const PhysicalObject &other) :
+    mass(other.mass),
+    position(other.position),
+    velocity(other.velocity)
+{
+
+}
+
 PhysicalObject::PhysicalObject(double mass) :
     mass(mass)
+{
+
+}
+
+PhysicalObject::~PhysicalObject()
 {
 
 }
@@ -86,24 +99,11 @@ SavableData *PhysicalObject::save() const
     SavableData *savable = Savable::save();
     savable->reserve(savable->size() + total);
 
-    savable->add(PackObject(mass));
+    savable->add(RawBytesConst(&mass), sizeof(mass));
     saveVector(position, savable);
     saveVector(velocity, savable);
 
     return savable;
-}
-
-bool PhysicalObject::restore(SavableData *data)
-{
-    if(!Savable::restore(data))
-        return false;
-
-    data->read(reinterpret_cast<char*>(&mass), sizeof(mass));
-
-    position = restoreVector(data);
-    velocity = restoreVector(data);
-
-    return true;
 }
 
 void PhysicalObject::saveVector(const Vector<double> &vect, SavableData *savable) const
@@ -111,7 +111,20 @@ void PhysicalObject::saveVector(const Vector<double> &vect, SavableData *savable
     savable->add(vect.size());
 
     for(int i = 0; i < vect.size(); ++i)
-        savable->add(PackObject(vect[i]));
+        savable->add(RawBytesConst(&(vect[i])), sizeof(double));
+}
+
+bool PhysicalObject::restore(SavableData *data)
+{
+    if(!Savable::restore(data))
+        return false;
+
+    data->read(RawBytes(&mass), sizeof(mass));
+
+    position = restoreVector(data);
+    velocity = restoreVector(data);
+
+    return true;
 }
 
 Vector<double> PhysicalObject::restoreVector(SavableData *savable) const
@@ -119,7 +132,7 @@ Vector<double> PhysicalObject::restoreVector(SavableData *savable) const
     Vector<double> result(savable->read());
 
     for(int i = 0; i < velocity.size(); ++i)
-        savable->read(reinterpret_cast<char*>(&(result[i])), sizeof(double));
+        savable->read(RawBytes(&(result[i])), sizeof(double));
 
     return result;
 }
