@@ -38,6 +38,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     configureTabWidget();
 
+    connect(ui->action_New, &QAction::triggered, this, &MainWindow::addSimulationTab);
     connect(ui->action_Exit, &QAction::triggered, this, &MainWindow::close);
     connect(ui->action_Redo, &QAction::triggered, this, &MainWindow::redo);
     connect(ui->action_Undo, &QAction::triggered, this, &MainWindow::undo);
