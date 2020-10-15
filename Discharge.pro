@@ -26,9 +26,12 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     physical/ElectricCharge.cpp \
+    physical/Modificator.cpp \
+    physical/ModificatorFactory.cpp \
     physical/PhysicalObject.cpp \
     physical/Simulation.cpp \
     physical/SimulationState.cpp \
+    physical/SimulationSubject.cpp \
     toolbox/Savable.cpp \
     toolbox/SavableData.cpp \
     toolbox/matrix.cpp \
@@ -51,10 +54,15 @@ HEADERS += \
     gui/zoomwidget.h \
     mainwindow.h \
     physical/ElectricCharge.h \
+    physical/Modificator.h \
+    physical/ModificatorFactory.h \
     physical/PhysicalConstants.h \
     physical/PhysicalObject.h \
     physical/PhysicalObjectPtr.h \
+    physical/RealNumber.h \
     physical/Simulation.h \
+    physical/SimulationSubject.h \
+    physical/SimulationSubjectPtr.h \
     toolbox/Savable.h \
     toolbox/SavableData.h \
     toolbox/history.h \
