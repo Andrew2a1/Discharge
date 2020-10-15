@@ -2,7 +2,7 @@
 #define SIMULATIONSUBJECT_H
 
 #include "toolbox/Savable.h"
-#include "Modificator.h"
+#include "modificators/Modificator.h"
 #include "RealNumber.h"
 #include "toolbox/vector.h"
 
@@ -29,7 +29,10 @@ public:
                       RealNumber electricCharge = 0);
 
     void addModificator(Modificator *modificator);
+    void addModificator(const std::string &name);
     void removeModificator(Modificator *modificator);
+
+    void setModificators(const std::list<Modificator*> &value);
     const std::list<Modificator *> &getModificators() const;
 
     int getModificatorIndex(Modificator *modificator);
@@ -58,7 +61,6 @@ public:
     virtual unsigned char typeID() const override;
     virtual SavableData* save() const override;
     virtual bool restore(SavableData *data) override;
-
 
 private:
     void saveModificator(const Modificator* modificator, SavableData *savable) const;

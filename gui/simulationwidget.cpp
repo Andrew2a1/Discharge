@@ -3,6 +3,7 @@
 
 #include "simulationgraphicobject.h"
 #include "attributeeditorwidget.h"
+#include "modificatoreditor.h"
 
 #include "physical/SimulationSubject.h"
 #include "physical/SimulationSubjectPtr.h"
@@ -69,8 +70,8 @@ void SimulationWidget::removeGraphicObject(GraphicObjectPtr object)
     if(simulated)
         simulation.removeSubject(simulated->getPhysical());
 
-    if(attrEditor && attrEditor->getTarget() == object.get())
-        closeAttributeEdit();
+    if(editor)
+        closeEditor();
 
     graphicObjects.removeOne(object);
 
@@ -80,7 +81,7 @@ void SimulationWidget::removeGraphicObject(GraphicObjectPtr object)
 
 void SimulationWidget::clearScene()
 {
-    closeAttributeEdit();
+    closeEditor();
     selection->clear();
 
     graphicObjects.clear();
@@ -123,14 +124,22 @@ void SimulationWidget::paintEvent(QPaintEvent *event)
 
     for(auto& graphic : graphicObjects)
     {
-        graphic->draw(&painter);
+        if(isVisible(graphic))
+            graphic->draw(&painter);
 
         if(selection->contains(graphic))
             painter.drawRect(graphic->getBounds());
     }
 
-
     QWidget::paintEvent(event);
+}
+
+bool SimulationWidget::isVisible(const GraphicObjectPtr &graphic) const
+{
+    const QPoint bottomRightSim = toSimPosition(rect().bottomRight());
+    const QRect simRect = QRect(QPoint(0,0), bottomRightSim);
+
+    return simRect.intersects(graphic->getBounds());
 }
 
 void SimulationWidget::keyPressEvent(QKeyEvent *event)
@@ -248,7 +257,7 @@ void SimulationWidget::mousePressEvent(QMouseEvent *event)
     }
     else if(event->buttons() & Qt::LeftButton)
     {
-        closeAttributeEdit();
+        closeEditor();
 
         GraphicObjectPtr lastClicked = getObjectAt(toSimPosition(clickedPoint));
         oldMovePos = clickedPoint;
@@ -266,7 +275,7 @@ void SimulationWidget::mousePressEvent(QMouseEvent *event)
     }
     else if(event->buttons() & Qt::RightButton)
     {
-        closeAttributeEdit();
+        closeEditor();
         if(!selection->contains(toSimPosition(clickedPoint)))
             selection->clear();
     }
@@ -310,7 +319,12 @@ void SimulationWidget::contextMenuEvent(QContextMenuEvent *event)
 
     if(graphic)
     {
-        contextMenu->addAction("Edit", [=](){createAttributeEdit(graphic);});
+        contextMenu->addAction("Edit",
+                               [=](){createAttributeEditor(graphic);});
+
+        contextMenu->addAction("Edit modificators",
+                               [=](){createModificatorsEditor(graphic);});
+
         contextMenu->addSeparator();
 
         contextMenu->addAction("Cut", [=](){
@@ -502,37 +516,54 @@ void SimulationWidget::saveToHistory()
     ui->historyWidget->save(createState());
 }
 
-void SimulationWidget::createAttributeEdit(GraphicObjectPtr obj)
+void SimulationWidget::createModificatorsEditor(GraphicObjectPtr obj)
 {
-    attrEditor = obj->createAttributeEditor(this);
+    ModificatorEditor *modificatorEditor = new ModificatorEditor(this);
+    modificatorEditor->setSimGraphic(dynamic_cast<SimulationGraphicObject*>(obj.get()));
 
-    const QSize &size = attrEditor->sizeHint();
-    const QPoint &newPos = fromSimPosition(obj->pos());
-
-    attrEditor->setGeometry(newPos.x(), newPos.y(),
-                            size.width() + 40, size.height() + 20);
-    attrEditor->show();
+    editor = modificatorEditor;
+    initEditor();
 }
 
-void SimulationWidget::closeAttributeEdit()
+void SimulationWidget::createAttributeEditor(GraphicObjectPtr obj)
 {
-    if(attrEditor)
+    editor = obj->createAttributeEditor(this);
+    initEditor();
+}
+
+void SimulationWidget::initEditor()
+{
+    if(!editor->getTarget())
+        return;
+
+    const QSize &size = editor->sizeHint();
+    const QPoint &newPos = fromSimPosition(editor->getTarget()->pos());
+
+    editor->setGeometry(newPos.x(), newPos.y(),
+                            size.width() + 40, size.height() + 20);
+    editor->show();
+}
+
+void SimulationWidget::closeEditor()
+{
+    if(editor)
     {
-        attrEditor->close();
-        attrEditor = nullptr;
+        editor->close();
+        editor->deleteLater();
+        editor = nullptr;
     }
 }
 
 void SimulationWidget::updateView()
 {
-    if(attrEditor)
+    if(editor)
     {
-        const QPoint newPos = fromSimPosition(attrEditor->getTarget()->pos());
+        const QPoint newPos = fromSimPosition(editor->getTarget()->pos());
 
-        attrEditor->setGeometry(newPos.x(),
-                                newPos.y(),
-                                attrEditor->width(),
-                                attrEditor->height());
+        editor->setGeometry(newPos.x(),
+                            newPos.y(),
+                            editor->width(),
+                            editor->height());
     }
 
     updateGeometry();

@@ -1,5 +1,4 @@
 #include "attributeeditorwidget.h"
-
 #include <QPainter>
 
 #include <QLabel>
@@ -9,7 +8,7 @@
 #include <QTextStream>
 
 AttributeEditorWidget::AttributeEditorWidget(GraphicObject *target, QWidget *parent) :
-    QWidget(parent),
+    Editor(parent),
     target(target)
 {
     mainLayout = new QGridLayout(this);

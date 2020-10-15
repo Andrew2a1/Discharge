@@ -1,13 +1,13 @@
 #ifndef ATTRIBUTEEDITORWIDGET_H
 #define ATTRIBUTEEDITORWIDGET_H
 
-#include <QWidget>
+#include "editor.h"
 #include <QGridLayout>
 
 #include <functional>
 #include "graphicobject.h"
 
-class AttributeEditorWidget : public QWidget
+class AttributeEditorWidget : public Editor
 {
     Q_OBJECT
 
@@ -18,7 +18,7 @@ private:
 public:
     explicit AttributeEditorWidget(GraphicObject *target, QWidget *parent = nullptr);
 
-    GraphicObject *getTarget() const;
+    virtual GraphicObject *getTarget() const override;
 
     void addSection(const QString &name);
 

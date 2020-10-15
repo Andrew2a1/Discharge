@@ -11,6 +11,7 @@
 #include "physical/Simulation.h"
 #include "physical/SimulationSubjectPtr.h"
 
+#include "editor.h"
 #include "graphicobject.h"
 #include "selectionmanager.h"
 #include "simulationwidgetstate.h"
@@ -29,7 +30,7 @@ class SimulationWidget : public QWidget, public Savable
 private:
     Ui::SimulationWidget *ui;
 
-    AttributeEditorWidget *attrEditor = nullptr;
+    Editor *editor = nullptr;
     PrototypeManager *prototypeManager = nullptr;
     CopyManager *copyManager = nullptr;
     SelectionManager *selection;
@@ -111,14 +112,18 @@ private:
     void fillAddMenu(QMenu *addMenu);
     void pasteTranslated(const QPoint &translation = QPoint());
 
+    bool isVisible(const GraphicObjectPtr &graphic) const;
+
     bool selectMultiply() const;
     void clearSelectionIfNotMultiply();
 
     QPoint getCenter(const QList<GraphicObjectPtr> &objects) const;
     void saveToHistory();
 
-    void createAttributeEdit(GraphicObjectPtr obj);
-    void closeAttributeEdit();
+    void createModificatorsEditor(GraphicObjectPtr obj);
+    void createAttributeEditor(GraphicObjectPtr obj);
+    void initEditor();
+    void closeEditor();
 
     void updateView();
     void handleDelete();

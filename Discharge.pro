@@ -12,8 +12,10 @@ SOURCES += \
     gui/attributeeditorwidget.cpp \
     gui/copymanager.cpp \
     gui/draggablegraphic.cpp \
+    gui/editor.cpp \
     gui/graphicobject.cpp \
     gui/historywidget.cpp \
+    gui/modificatoreditor.cpp \
     gui/prototypemanager.cpp \
     gui/selectionmanager.cpp \
     gui/simulationgraphicobject.cpp \
@@ -23,11 +25,18 @@ SOURCES += \
     gui/zoomwidget.cpp \
     main.cpp \
     mainwindow.cpp \
-    physical/ClassicModificator.cpp \
-    physical/ModificatorFactory.cpp \
     physical/Simulation.cpp \
     physical/SimulationState.cpp \
     physical/SimulationSubject.cpp \
+    physical/modificators/ChargeExchangeModificator.cpp \
+    physical/modificators/ClassicModificator.cpp \
+    physical/modificators/ElectrostaticForceModificator.cpp \
+    physical/modificators/ForceSensitiveModificator.cpp \
+    physical/modificators/GravityForceModificator.cpp \
+    physical/modificators/Modificator.cpp \
+    physical/modificators/ModificatorFactory.cpp \
+    physical/modificators/MovableModificator.cpp \
+    physical/modificators/PhysicalCollisionModificator.cpp \
     toolbox/Savable.cpp \
     toolbox/SavableData.cpp \
     toolbox/matrix.cpp \
@@ -37,8 +46,10 @@ HEADERS += \
     gui/attributeeditorwidget.h \
     gui/copymanager.h \
     gui/draggablegraphic.h \
+    gui/editor.h \
     gui/graphicobject.h \
     gui/historywidget.h \
+    gui/modificatoreditor.h \
     gui/prototypemanager.h \
     gui/selectionmanager.h \
     gui/simulationgraphicobject.h \
@@ -47,14 +58,21 @@ HEADERS += \
     gui/timecontrolwidget.h \
     gui/zoomwidget.h \
     mainwindow.h \
-    physical/ClassicModificator.h \
-    physical/Modificator.h \
-    physical/ModificatorFactory.h \
     physical/PhysicalConstants.h \
     physical/RealNumber.h \
     physical/Simulation.h \
+    physical/SimulationState.h \
     physical/SimulationSubject.h \
     physical/SimulationSubjectPtr.h \
+    physical/modificators/ChargeExchangeModificator.h \
+    physical/modificators/ClassicModificator.h \
+    physical/modificators/ElectrostaticForceModificator.h \
+    physical/modificators/ForceSensitiveModificator.h \
+    physical/modificators/GravityForceModificator.h \
+    physical/modificators/Modificator.h \
+    physical/modificators/ModificatorFactory.h \
+    physical/modificators/MovableModificator.h \
+    physical/modificators/PhysicalCollisionModificator.h \
     toolbox/Savable.h \
     toolbox/SavableData.h \
     toolbox/Unused.h \
@@ -65,6 +83,7 @@ HEADERS += \
 
 FORMS += \
     gui/historywidget.ui \
+    gui/modificatoreditor.ui \
     gui/simulationwidget.ui \
     gui/timecontrolwidget.ui \
     gui/zoomwidget.ui \

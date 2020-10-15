@@ -18,7 +18,7 @@
 #include "toolbox/Savable.h"
 #include "toolbox/SavableData.h"
 
-#include "physical/ModificatorFactory.h"
+#include "physical/modificators/ModificatorFactory.h"
 
 #include "gui/simulationgraphicobject.h"
 #include "gui/draggablegraphic.h"
@@ -139,7 +139,8 @@ void MainWindow::createPhysical()
     QGridLayout *physicals = new QGridLayout(ui->physicalBox);
 
     SimulationSubjectPtr phys(new SimulationSubject(2, 20, 1e12));
-    phys->addModificator(ModificatorFactory::instance()->get("Classic"));
+    addBasicModificators(phys);
+    phys->addModificator("GravityForce");
 
     GraphicObjectPtr physicalGraphic(new SimulationGraphicObject(phys));
 
@@ -156,9 +157,13 @@ void MainWindow::createElectrostatic()
     SimulationSubjectPtr electricPlus(new SimulationSubject(2, 15, 1.0, 1e-4));
     SimulationSubjectPtr electricMinus(new SimulationSubject(2, 15, 1.0, -1e-4));
 
-    electricNeutral->addModificator(ModificatorFactory::instance()->get("Classic"));
-    electricPlus->addModificator(ModificatorFactory::instance()->get("Classic"));
-    electricMinus->addModificator(ModificatorFactory::instance()->get("Classic"));
+    addBasicModificators(electricNeutral);
+    addBasicModificators(electricPlus);
+    addBasicModificators(electricMinus);
+
+    electricNeutral->addModificator("ElectrostaticForce");
+    electricPlus->addModificator("ElectrostaticForce");
+    electricMinus->addModificator("ElectrostaticForce");
 
     GraphicObjectPtr neutral(new SimulationGraphicObject(electricNeutral));
     GraphicObjectPtr plus(new SimulationGraphicObject(electricPlus));
@@ -171,6 +176,17 @@ void MainWindow::createElectrostatic()
     prototypeManager->add("Neutral", neutral);
     prototypeManager->add("Plus", plus);
     prototypeManager->add("Minus", minus);
+}
+
+void MainWindow::addBasicModificators(SimulationSubjectPtr subject)
+{
+    static const std::vector<std::string> basic = {"Movable", "ForceSensitive",
+                                                   "PhysicalCollision", "ChargeExchange"};
+
+    for(const auto &name: basic)
+    {
+        subject->addModificator(name);
+    }
 }
 
 bool MainWindow::openFile(QString filename)

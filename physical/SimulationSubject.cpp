@@ -1,5 +1,5 @@
 #include "SimulationSubject.h"
-#include "ModificatorFactory.h"
+#include "modificators/ModificatorFactory.h"
 #include "toolbox/SavableData.h"
 #include "toolbox/Unused.h"
 
@@ -24,12 +24,26 @@ SimulationSubject::SimulationSubject(unsigned dimensions,
 
 void SimulationSubject::addModificator(Modificator *modificator)
 {
-    modificators.push_back(modificator);
+    if(modificator != nullptr)
+        modificators.push_back(modificator);
+}
+
+void SimulationSubject::addModificator(const std::string &name)
+{
+    ModificatorFactory *factory = ModificatorFactory::instance();
+
+    if(factory->hasItem(name))
+        modificators.push_back(factory->get(name));
 }
 
 void SimulationSubject::removeModificator(Modificator *modificator)
 {
     modificators.remove(modificator);
+}
+
+void SimulationSubject::setModificators(const std::list<Modificator *> &value)
+{
+    modificators = value;
 }
 
 const std::list<Modificator*> &SimulationSubject::getModificators() const
@@ -221,7 +235,7 @@ bool SimulationSubject::restore(SavableData *data)
     {
         int size = data->read();
         for(int i = 0; i < size; ++i)
-            modificators.push_back(restoreModificator(data));
+            addModificator(restoreModificator(data));
     }
 
     return true;

@@ -30,6 +30,7 @@ public:
 private:
     SimulationWidget *getActiveSim() const;
 
+    void addBasicModificators(SimulationSubjectPtr subject);
     void configureTabWidget();
 
     void createGraphicObjects();
