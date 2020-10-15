@@ -12,10 +12,8 @@ SOURCES += \
     gui/attributeeditorwidget.cpp \
     gui/copymanager.cpp \
     gui/draggablegraphic.cpp \
-    gui/electrostaticgraphicobject.cpp \
     gui/graphicobject.cpp \
     gui/historywidget.cpp \
-    gui/physicalgraphicobject.cpp \
     gui/prototypemanager.cpp \
     gui/selectionmanager.cpp \
     gui/simulationgraphicobject.cpp \
@@ -25,10 +23,8 @@ SOURCES += \
     gui/zoomwidget.cpp \
     main.cpp \
     mainwindow.cpp \
-    physical/ElectricCharge.cpp \
-    physical/Modificator.cpp \
+    physical/ClassicModificator.cpp \
     physical/ModificatorFactory.cpp \
-    physical/PhysicalObject.cpp \
     physical/Simulation.cpp \
     physical/SimulationState.cpp \
     physical/SimulationSubject.cpp \
@@ -41,10 +37,8 @@ HEADERS += \
     gui/attributeeditorwidget.h \
     gui/copymanager.h \
     gui/draggablegraphic.h \
-    gui/electrostaticgraphicobject.h \
     gui/graphicobject.h \
     gui/historywidget.h \
-    gui/physicalgraphicobject.h \
     gui/prototypemanager.h \
     gui/selectionmanager.h \
     gui/simulationgraphicobject.h \
@@ -53,18 +47,17 @@ HEADERS += \
     gui/timecontrolwidget.h \
     gui/zoomwidget.h \
     mainwindow.h \
-    physical/ElectricCharge.h \
+    physical/ClassicModificator.h \
     physical/Modificator.h \
     physical/ModificatorFactory.h \
     physical/PhysicalConstants.h \
-    physical/PhysicalObject.h \
-    physical/PhysicalObjectPtr.h \
     physical/RealNumber.h \
     physical/Simulation.h \
     physical/SimulationSubject.h \
     physical/SimulationSubjectPtr.h \
     toolbox/Savable.h \
     toolbox/SavableData.h \
+    toolbox/Unused.h \
     toolbox/history.h \
     toolbox/matrix.h \
     toolbox/matrixexception.h \

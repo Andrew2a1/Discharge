@@ -2,13 +2,10 @@
 #include "ui_simulationwidget.h"
 
 #include "simulationgraphicobject.h"
-#include "physicalgraphicobject.h"
-#include "electrostaticgraphicobject.h"
 #include "attributeeditorwidget.h"
 
-#include "physical/PhysicalObject.h"
-#include "physical/ElectricCharge.h"
-#include "physical/PhysicalObjectPtr.h"
+#include "physical/SimulationSubject.h"
+#include "physical/SimulationSubjectPtr.h"
 
 #include <QPainter>
 #include <QMouseEvent>
@@ -494,12 +491,7 @@ bool SimulationWidget::restore(SavableData *data)
 
     for(const auto& subject: simulation.getSubjects())
     {
-        ElectricChargePtr electric(std::dynamic_pointer_cast<ElectricCharge>(subject));
-
-        if(electric)
-            addGraphicObject(GraphicObjectPtr(new ElectrostaticGraphicObject(electric)), false);
-        else
-            addGraphicObject(GraphicObjectPtr(new PhysicalGraphicObject(subject)), false);
+        addGraphicObject(GraphicObjectPtr(new SimulationGraphicObject(subject)), false);
     }
 
     return true;

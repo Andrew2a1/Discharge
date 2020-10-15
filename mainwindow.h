@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 
-#include "physical/PhysicalObjectPtr.h"
+#include "physical/SimulationSubjectPtr.h"
 #include "gui/simulationwidget.h"
 #include "gui/copymanager.h"
 #include "gui/prototypemanager.h"
@@ -35,8 +35,6 @@ private:
     void createGraphicObjects();
     void createPhysical();
     void createElectrostatic();
-
-    void setTo2D(const PhysicalObjectPtr &physical);
 
     bool openFile(QString filename);
     bool saveToFile(QString filename);

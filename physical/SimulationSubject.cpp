@@ -1,6 +1,7 @@
 #include "SimulationSubject.h"
-#include "toolbox/SavableData.h"
 #include "ModificatorFactory.h"
+#include "toolbox/SavableData.h"
+#include "toolbox/Unused.h"
 
 SimulationSubject::SimulationSubject(unsigned dimensions, const RealNumber &radius) :
     position(Vector<RealNumber>(dimensions)),
@@ -19,6 +20,59 @@ SimulationSubject::SimulationSubject(unsigned dimensions,
 {
     this->mass = mass;
     this->electricCharge = electricCharge;
+}
+
+void SimulationSubject::addModificator(Modificator *modificator)
+{
+    modificators.push_back(modificator);
+}
+
+void SimulationSubject::removeModificator(Modificator *modificator)
+{
+    modificators.remove(modificator);
+}
+
+const std::list<Modificator*> &SimulationSubject::getModificators() const
+{
+    return modificators;
+}
+
+int SimulationSubject::getModificatorIndex(Modificator *modificator)
+{
+    int i = 0;
+    int idx = -1;
+
+    for(const auto &mod : modificators)
+    {
+        if(mod == modificator)
+        {
+            idx = i;
+            break;
+        }
+        ++i;
+    }
+
+    return idx;
+}
+
+void SimulationSubject::swapModificators(Modificator *first, Modificator *second)
+{
+    auto iter = modificators.begin();
+    decltype(iter) first_iter;
+    decltype(iter) second_iter;
+
+    if(first == second)
+        return;
+
+    for(UNUSED(iter); iter != modificators.end(); ++iter)
+    {
+        if(*iter == first)
+            first_iter = iter;
+        else if(*iter == second)
+            second_iter = iter;
+    }
+
+    std::swap(first_iter, second_iter);
 }
 
 Vector<RealNumber> SimulationSubject::getPosition() const
@@ -103,6 +157,18 @@ Vector<RealNumber> SimulationSubject::calculateForce(const SimulationSubject *ot
     return force;
 }
 
+void SimulationSubject::collide(SimulationSubject *other)
+{
+    for(const auto &modificator: modificators)
+    {
+        modificator->collide(this, other);
+    }
+}
+
+bool SimulationSubject::isCollision(const SimulationSubject *other)
+{
+    return radius + other->radius >= (position - other->position).abs();
+}
 
 unsigned char SimulationSubject::typeID() const
 {
@@ -151,9 +217,12 @@ bool SimulationSubject::restore(SavableData *data)
 
     modificators.clear();
 
-    int size = data->read();
-    for(int i = 0; i < size; ++i)
-        modificators.push_back(restoreModificator(data));
+    if(!data->atEnd())
+    {
+        int size = data->read();
+        for(int i = 0; i < size; ++i)
+            modificators.push_back(restoreModificator(data));
+    }
 
     return true;
 }
@@ -172,7 +241,10 @@ Modificator *SimulationSubject::restoreModificator(SavableData *savable)
     ModificatorFactory *factory = ModificatorFactory::instance();
 
     int size = savable->read();
-    char *name = new char[size];
+    char *name = new char[size+1];
+
+    savable->read(RawBytes(name), size);
+    name[size] = '\0';
 
     modificator = factory->get(name);
 

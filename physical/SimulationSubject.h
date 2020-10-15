@@ -28,6 +28,13 @@ public:
                       RealNumber mass,
                       RealNumber electricCharge = 0);
 
+    void addModificator(Modificator *modificator);
+    void removeModificator(Modificator *modificator);
+    const std::list<Modificator *> &getModificators() const;
+
+    int getModificatorIndex(Modificator *modificator);
+    void swapModificators(Modificator *first, Modificator *second);
+
     unsigned getDimensions() const;
     RealNumber getRadius() const;
     RealNumber getMass() const;
@@ -44,10 +51,14 @@ public:
     void applyTime(RealNumber dt);
     void applyForce(const Vector<RealNumber> &force, RealNumber dt);
     Vector<RealNumber> calculateForce(const SimulationSubject *other) const;
+    void collide(SimulationSubject *other);
+
+    bool isCollision(const SimulationSubject *other);
 
     virtual unsigned char typeID() const override;
     virtual SavableData* save() const override;
     virtual bool restore(SavableData *data) override;
+
 
 private:
     void saveModificator(const Modificator* modificator, SavableData *savable) const;

@@ -4,26 +4,26 @@
 #include <map>
 #include <list>
 
-#include "PhysicalObjectPtr.h"
+#include "SimulationSubjectPtr.h"
 
 class SavableData;
 
 class SimulationState
 {
 private:
-    std::map<PhysicalObjectPtr, SavableData*> saved;
+    std::map<SimulationSubjectPtr, SavableData*> saved;
 
 public:
     ~SimulationState();
 
-    void saveObject(PhysicalObjectPtr object);
-    void removeObject(PhysicalObjectPtr object);
+    void saveObject(SimulationSubjectPtr object);
+    void removeObject(SimulationSubjectPtr object);
     void clear();
 
-    SavableData* getData(PhysicalObjectPtr object);
-    std::list<PhysicalObjectPtr> getSaved() const;
+    SavableData* getData(SimulationSubjectPtr object);
+    std::list<SimulationSubjectPtr> getSaved() const;
     
-    bool isSaved(PhysicalObjectPtr object);
+    bool isSaved(SimulationSubjectPtr object);
 };
 
 #endif // SIMULATION_STATE_H

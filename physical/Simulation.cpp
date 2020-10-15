@@ -1,9 +1,8 @@
 #include "Simulation.h"
 #include "SimulationState.h"
 
-#include "PhysicalObject.h"
-#include "ElectricCharge.h"
-#include "PhysicalObjectPtr.h"
+#include "SimulationSubject.h"
+#include "SimulationSubjectPtr.h"
 
 #include "toolbox/SavableData.h"
 #include <vector>
@@ -13,7 +12,7 @@ void Simulation::clearSubjects()
     subjects.clear();
 }
 
-void Simulation::applyTime(double dt)
+void Simulation::applyTime(RealNumber dt)
 {
     if (subjects.size() == 1)
     {
@@ -30,28 +29,35 @@ void Simulation::applyTime(double dt)
             for (auto &other : subjects)
             {
                 if (subject != other)
+                {
                     forces[i] += subject->calculateForce(other.get());
+
+                    if(subject->isCollision(other.get())) {
+                        subject->collide(other.get());
+                    }
+                }
             }
             ++i;
         }
 
         i = 0;
-        for (auto &subject : subjects)
+        for (auto &subject : subjects) {
             subject->applyForce(forces[i++], dt);
+        }
     }
 }
 
-void Simulation::addSubject(const PhysicalObjectPtr &subject)
+void Simulation::addSubject(const SimulationSubjectPtr &subject)
 {
     subjects.push_back(subject);
 }
 
-void Simulation::removeSubject(const PhysicalObjectPtr &subject)
+void Simulation::removeSubject(const SimulationSubjectPtr &subject)
 {
     subjects.remove(subject);
 }
 
-const std::list<PhysicalObjectPtr> &Simulation::getSubjects() const
+const std::list<SimulationSubjectPtr> &Simulation::getSubjects() const
 {
     return subjects;
 }
@@ -68,7 +74,7 @@ SimulationState *Simulation::saveState() const
 
 void Simulation::restoreState(SimulationState *simulationState)
 {
-    std::list<PhysicalObjectPtr> savedObjects = simulationState->getSaved();
+    std::list<SimulationSubjectPtr> savedObjects = simulationState->getSaved();
 
     auto iter = subjects.begin();
     while (iter != subjects.end())
@@ -94,7 +100,7 @@ void Simulation::restoreState(SimulationState *simulationState)
     }
 }
 
-void Simulation::restoreObject(const PhysicalObjectPtr &obj, SimulationState *simState)
+void Simulation::restoreObject(const SimulationSubjectPtr &obj, SimulationState *simState)
 {
     SavableData *savable = simState->getData(obj);
     obj->restore(savable);
@@ -126,36 +132,12 @@ bool Simulation::restore(SavableData *data)
     if(!Savable::restore(data))
         return false;
 
-    std::list<PhysicalObjectPtr> prototypes = {
-          PhysicalObjectPtr(new PhysicalObject),
-          PhysicalObjectPtr(new ElectricCharge)
-    };
-
-    prototypes.front()->setPosition(Vector<>(2));
-    prototypes.front()->setVelocity(Vector<>(2));
-
-    prototypes.back()->setPosition(Vector<>(2));
-    prototypes.back()->setVelocity(Vector<>(2));
-
     clearSubjects();
     while(!data->atEnd())
     {
-        const char id = data->getRaw()[data->pos()];
-        bool isValid = false;
-
-        for(const auto &prototype: prototypes)
-        {
-            if(id == prototype->typeID())
-            {
-                prototype->restore(data);
-                addSubject(PhysicalObjectPtr(prototype->clone()));
-                isValid = true;
-                break;
-            }
-        }
-
-        if(!isValid)
-            return false;
+        SimulationSubjectPtr subject(new SimulationSubject(2));
+        subject->restore(data);
+        addSubject(subject);
     }
 
     return true;

@@ -9,7 +9,7 @@
 
 #include "toolbox/Savable.h"
 #include "physical/Simulation.h"
-#include "physical/PhysicalObjectPtr.h"
+#include "physical/SimulationSubjectPtr.h"
 
 #include "graphicobject.h"
 #include "selectionmanager.h"

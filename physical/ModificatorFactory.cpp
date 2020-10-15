@@ -1,6 +1,8 @@
 #include "ModificatorFactory.h"
 #include "Modificator.h"
 
+#include "ClassicModificator.h"
+
 ModificatorFactory *ModificatorFactory::unique = nullptr;
 
 ModificatorFactory::~ModificatorFactory()
@@ -19,7 +21,7 @@ ModificatorFactory *ModificatorFactory::instance()
 
 ModificatorFactory::ModificatorFactory()
 {
-    // TODO: FIll modificator list
+    modificators.push_back(new ClassicModificator);
 }
 
 Modificator *ModificatorFactory::get(const std::string &name)

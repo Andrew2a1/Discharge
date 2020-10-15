@@ -21,6 +21,7 @@ public:
     virtual void applyTime(SimulationSubject *subject, RealNumber dt) const = 0;
     virtual void applyForce(SimulationSubject *subject, const Vector<RealNumber> &force, RealNumber dt) const = 0;
     virtual void calculateForce(const SimulationSubject *subject, const SimulationSubject *other, Vector<RealNumber> &force) const = 0;
+    virtual void collide(SimulationSubject *subject, SimulationSubject *other) = 0;
 };
 
 #endif // MODIFICATOR_H

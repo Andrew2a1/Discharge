@@ -1,8 +1,25 @@
 #include "simulationgraphicobject.h"
 #include "attributeeditorwidget.h"
-#include "physical/PhysicalObject.h"
+#include "physical/SimulationSubject.h"
 
 #include <QPainter>
+
+SimulationGraphicObject::SimulationGraphicObject(const SimulationGraphicObject &other):
+    physical(other.physical)
+{
+
+}
+
+SimulationGraphicObject::SimulationGraphicObject(SimulationSubjectPtr physical) :
+    physical(physical)
+{
+
+}
+
+SimulationSubjectPtr SimulationGraphicObject::getPhysical() const
+{
+    return physical;
+}
 
 void SimulationGraphicObject::setPosition(const QPoint &newPosition)
 {
@@ -22,14 +39,25 @@ QPoint SimulationGraphicObject::pos() const
 QRect SimulationGraphicObject::getBounds() const
 {
     const QPoint centre = pos();
-    return QRect(centre.x() - RADIUS, centre.y() - RADIUS, 2*RADIUS, 2*RADIUS);
+    int radius = (int)getPhysical()->getRadius();
+    return QRect(centre.x() - radius, centre.y() - radius, 2*radius, 2*radius);
 }
 
 void SimulationGraphicObject::draw(QPainter *painter)
 {
     const QPoint centre = pos();
-    painter->drawEllipse(centre, RADIUS, RADIUS);
-    painter->drawText(getBounds(), Qt::AlignCenter ,"m");
+    QString charge = "M";
+
+    if(getPhysical()->getElectricCharge() > 0)
+        charge = "+";
+    else if(getPhysical()->getElectricCharge() < 0)
+        charge = "-";
+
+    painter->drawEllipse(centre,
+                         (int)getPhysical()->getRadius(),
+                         (int)getPhysical()->getRadius());
+
+    painter->drawText(getBounds(), Qt::AlignCenter , charge);
 }
 
 AttributeEditorWidget *SimulationGraphicObject::createAttributeEditor(QWidget *parent)
@@ -69,6 +97,20 @@ AttributeEditorWidget *SimulationGraphicObject::createAttributeEditor(QWidget *p
                                 getPhysical()->getVelocity()[i]);
     }
 
+    attrEdit->addSection("Electrostatic");
+
+    attrEdit->addDoubleAttr("Charge",
+                            [=](double charge) {
+                                getPhysical()->setElectricCharge(charge);
+                            },
+                            getPhysical()->getElectricCharge());
+
     return attrEdit;
+}
+
+GraphicObject *SimulationGraphicObject::clone() const
+{
+    SimulationSubjectPtr subject(new SimulationSubject(*physical));
+    return new SimulationGraphicObject(subject);
 }
 

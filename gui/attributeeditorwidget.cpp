@@ -64,7 +64,9 @@ void AttributeEditorWidget::addDoubleAttr(const QString &name,
 void AttributeEditorWidget::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
+
     painter.setRenderHint(QPainter::Antialiasing);
+    painter.fillRect(this->rect(), QColor(255, 255, 255, 128));
     painter.drawRect(this->rect());
 
     QWidget::paintEvent(event);

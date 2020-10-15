@@ -12,15 +12,15 @@
 
 #include <QGridLayout>
 
-#include "physical/PhysicalObject.h"
-#include "physical/ElectricCharge.h"
-#include "physical/PhysicalObjectPtr.h"
+#include "physical/SimulationSubject.h"
+#include "physical/SimulationSubjectPtr.h"
 
 #include "toolbox/Savable.h"
 #include "toolbox/SavableData.h"
 
-#include "gui/physicalgraphicobject.h"
-#include "gui/electrostaticgraphicobject.h"
+#include "physical/ModificatorFactory.h"
+
+#include "gui/simulationgraphicobject.h"
 #include "gui/draggablegraphic.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -138,10 +138,10 @@ void MainWindow::createPhysical()
 {
     QGridLayout *physicals = new QGridLayout(ui->physicalBox);
 
-    PhysicalObjectPtr phys(new PhysicalObject(1e12));
-    setTo2D(phys);
+    SimulationSubjectPtr phys(new SimulationSubject(2, 20, 1e12));
+    phys->addModificator(ModificatorFactory::instance()->get("Classic"));
 
-    GraphicObjectPtr physicalGraphic(new PhysicalGraphicObject(phys));
+    GraphicObjectPtr physicalGraphic(new SimulationGraphicObject(phys));
 
     physicals->addWidget(new DraggableGraphic(physicalGraphic, this));
     prototypeManager->add("Mass", physicalGraphic);
@@ -152,17 +152,17 @@ void MainWindow::createElectrostatic()
     QGridLayout *electrostatic = new QGridLayout(ui->electrostaticBox);
     electrostatic->setAlignment(Qt::AlignTop);
 
-    ElectricChargePtr electricNeutral(new ElectricCharge(1.0, 0));
-    ElectricChargePtr electricPlus(new ElectricCharge(1.0, 1e-4));
-    ElectricChargePtr electricMinus(new ElectricCharge(1.0, -1e-4));
+    SimulationSubjectPtr electricNeutral(new SimulationSubject(2, 15, 1.0));
+    SimulationSubjectPtr electricPlus(new SimulationSubject(2, 15, 1.0, 1e-4));
+    SimulationSubjectPtr electricMinus(new SimulationSubject(2, 15, 1.0, -1e-4));
 
-    setTo2D(electricNeutral);
-    setTo2D(electricPlus);
-    setTo2D(electricMinus);
+    electricNeutral->addModificator(ModificatorFactory::instance()->get("Classic"));
+    electricPlus->addModificator(ModificatorFactory::instance()->get("Classic"));
+    electricMinus->addModificator(ModificatorFactory::instance()->get("Classic"));
 
-    GraphicObjectPtr neutral(new ElectrostaticGraphicObject(electricNeutral));
-    GraphicObjectPtr plus(new ElectrostaticGraphicObject(electricPlus));
-    GraphicObjectPtr minus(new ElectrostaticGraphicObject(electricMinus));
+    GraphicObjectPtr neutral(new SimulationGraphicObject(electricNeutral));
+    GraphicObjectPtr plus(new SimulationGraphicObject(electricPlus));
+    GraphicObjectPtr minus(new SimulationGraphicObject(electricMinus));
 
     electrostatic->addWidget(new DraggableGraphic(neutral, this), 0, 0);
     electrostatic->addWidget(new DraggableGraphic(plus, this), 0, 1);
@@ -171,12 +171,6 @@ void MainWindow::createElectrostatic()
     prototypeManager->add("Neutral", neutral);
     prototypeManager->add("Plus", plus);
     prototypeManager->add("Minus", minus);
-}
-
-void MainWindow::setTo2D(const PhysicalObjectPtr &physical)
-{
-    physical->setPosition(Vector<>({0, 0}));
-    physical->setVelocity(Vector<>({0, 0}));
 }
 
 bool MainWindow::openFile(QString filename)
