@@ -23,6 +23,14 @@ DraggableGraphic::DraggableGraphic(GraphicObjectPtr graphic, QWidget *parent) :
     createLayout();
 }
 
+void DraggableGraphic::paintEvent(QPaintEvent *event)
+{
+    QPainter painter(this);
+    painter.fillRect(rect(), Qt::white);
+
+    QWidget::paintEvent(event);
+}
+
 void DraggableGraphic::createPixmap()
 {
     QPainter painter(&pixmap);
