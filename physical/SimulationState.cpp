@@ -1,5 +1,5 @@
 #include "SimulationState.h"
-#include "PhysicalObject.h"
+#include "physical/SimulationSubject.h"
 #include "toolbox/SavableData.h"
 
 SimulationState::~SimulationState()
@@ -15,25 +15,25 @@ void SimulationState::clear()
     saved.clear();
 }
 
-void SimulationState::saveObject(PhysicalObjectPtr object)
+void SimulationState::saveObject(SimulationSubjectPtr object)
 {
     saved[object] = object->save();
 }
 
-void SimulationState::removeObject(PhysicalObjectPtr object)
+void SimulationState::removeObject(SimulationSubjectPtr object)
 {
     delete saved[object];
     saved.erase(object);
 }
 
-SavableData *SimulationState::getData(PhysicalObjectPtr object)
+SavableData *SimulationState::getData(SimulationSubjectPtr object)
 {
     return saved[object];
 }
 
-std::list<PhysicalObjectPtr> SimulationState::getSaved() const
+std::list<SimulationSubjectPtr> SimulationState::getSaved() const
 {
-    std::list<PhysicalObjectPtr> objects;
+    std::list<SimulationSubjectPtr> objects;
 
     for(const auto &key : saved)
         objects.push_back(key.first);
@@ -41,7 +41,7 @@ std::list<PhysicalObjectPtr> SimulationState::getSaved() const
     return objects;
 }
 
-bool SimulationState::isSaved(PhysicalObjectPtr object)
+bool SimulationState::isSaved(SimulationSubjectPtr object)
 {
     return saved.find(object) != saved.end();
 }

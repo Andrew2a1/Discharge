@@ -8,19 +8,17 @@
 #include <QPushButton>
 
 #include <QAction>
-#include <QTimer>
-
 #include <QGridLayout>
 
-#include "physical/PhysicalObject.h"
-#include "physical/ElectricCharge.h"
-#include "physical/PhysicalObjectPtr.h"
+#include "physical/SimulationSubject.h"
+#include "physical/SimulationSubjectPtr.h"
 
 #include "toolbox/Savable.h"
 #include "toolbox/SavableData.h"
 
-#include "gui/physicalgraphicobject.h"
-#include "gui/electrostaticgraphicobject.h"
+#include "physical/modificators/ModificatorFactory.h"
+
+#include "gui/simulationgraphicobject.h"
 #include "gui/draggablegraphic.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -38,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     configureTabWidget();
 
+    connect(ui->action_New, &QAction::triggered, this, &MainWindow::addSimulationTab);
     connect(ui->action_Exit, &QAction::triggered, this, &MainWindow::close);
     connect(ui->action_Redo, &QAction::triggered, this, &MainWindow::redo);
     connect(ui->action_Undo, &QAction::triggered, this, &MainWindow::undo);
@@ -99,8 +98,11 @@ void MainWindow::removeTab(int idx)
         QTabBar *tabBar = ui->tabWidget->tabBar();
         tabBar->tabButton(1 - idx, QTabBar::RightSide)->hide();
     }
-    if(ui->tabWidget->count() > 1)
+    if(ui->tabWidget->count() > 1) {
+        QWidget *widget = ui->tabWidget->widget(idx);
         ui->tabWidget->removeTab(idx);
+        widget->deleteLater();
+    }
 }
 
 void MainWindow::showAbout() const
@@ -137,10 +139,11 @@ void MainWindow::createPhysical()
 {
     QGridLayout *physicals = new QGridLayout(ui->physicalBox);
 
-    PhysicalObjectPtr phys(new PhysicalObject(1e12));
-    setTo2D(phys);
+    SimulationSubjectPtr phys(new SimulationSubject(2, 20, 1e12));
+    addBasicModificators(phys);
+    phys->addModificator("GravityForce");
 
-    GraphicObjectPtr physicalGraphic(new PhysicalGraphicObject(phys));
+    GraphicObjectPtr physicalGraphic(new SimulationGraphicObject(phys));
 
     physicals->addWidget(new DraggableGraphic(physicalGraphic, this));
     prototypeManager->add("Mass", physicalGraphic);
@@ -151,17 +154,21 @@ void MainWindow::createElectrostatic()
     QGridLayout *electrostatic = new QGridLayout(ui->electrostaticBox);
     electrostatic->setAlignment(Qt::AlignTop);
 
-    ElectricChargePtr electricNeutral(new ElectricCharge(1.0, 0));
-    ElectricChargePtr electricPlus(new ElectricCharge(1.0, 1e-4));
-    ElectricChargePtr electricMinus(new ElectricCharge(1.0, -1e-4));
+    SimulationSubjectPtr electricNeutral(new SimulationSubject(2, 15, 1.0));
+    SimulationSubjectPtr electricPlus(new SimulationSubject(2, 15, 1.0, 1e-4));
+    SimulationSubjectPtr electricMinus(new SimulationSubject(2, 15, 1.0, -1e-4));
 
-    setTo2D(electricNeutral);
-    setTo2D(electricPlus);
-    setTo2D(electricMinus);
+    addBasicModificators(electricNeutral);
+    addBasicModificators(electricPlus);
+    addBasicModificators(electricMinus);
 
-    GraphicObjectPtr neutral(new ElectrostaticGraphicObject(electricNeutral));
-    GraphicObjectPtr plus(new ElectrostaticGraphicObject(electricPlus));
-    GraphicObjectPtr minus(new ElectrostaticGraphicObject(electricMinus));
+    electricNeutral->addModificator("ElectrostaticForce");
+    electricPlus->addModificator("ElectrostaticForce");
+    electricMinus->addModificator("ElectrostaticForce");
+
+    GraphicObjectPtr neutral(new SimulationGraphicObject(electricNeutral));
+    GraphicObjectPtr plus(new SimulationGraphicObject(electricPlus));
+    GraphicObjectPtr minus(new SimulationGraphicObject(electricMinus));
 
     electrostatic->addWidget(new DraggableGraphic(neutral, this), 0, 0);
     electrostatic->addWidget(new DraggableGraphic(plus, this), 0, 1);
@@ -172,10 +179,15 @@ void MainWindow::createElectrostatic()
     prototypeManager->add("Minus", minus);
 }
 
-void MainWindow::setTo2D(const PhysicalObjectPtr &physical)
+void MainWindow::addBasicModificators(SimulationSubjectPtr subject)
 {
-    physical->setPosition(Vector<>({0, 0}));
-    physical->setVelocity(Vector<>({0, 0}));
+    static const std::vector<std::string> basic = {"Movable", "ForceSensitive",
+                                                   "PhysicalCollision", "ChargeExchange"};
+
+    for(const auto &name: basic)
+    {
+        subject->addModificator(name);
+    }
 }
 
 bool MainWindow::openFile(QString filename)

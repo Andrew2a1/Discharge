@@ -2,24 +2,28 @@
 #define SIMULATION_H
 
 #include <list>
-#include "PhysicalObjectPtr.h"
+#include "SimulationSubjectPtr.h"
 #include "toolbox/Savable.h"
+
+#include "RealNumber.h"
 
 class SimulationState;
 
 class Simulation : public Savable
 {
 private:
-    std::list<PhysicalObjectPtr> subjects;
+    std::list<SimulationSubjectPtr> subjects;
 
 public:
-    void applyTime(double dt);
+    virtual ~Simulation() = default;
 
-    void addSubject(const PhysicalObjectPtr &subject);
-    void removeSubject(const PhysicalObjectPtr &subject);
+    void applyTime(RealNumber dt);
+
+    void addSubject(const SimulationSubjectPtr &subject);
+    void removeSubject(const SimulationSubjectPtr &subject);
     void clearSubjects();
 
-    const std::list<PhysicalObjectPtr>& getSubjects() const;
+    const std::list<SimulationSubjectPtr>& getSubjects() const;
 
     SimulationState *saveState() const;
     void restoreState(SimulationState *simulationState);
@@ -29,7 +33,7 @@ public:
     virtual bool restore(SavableData *data) override;
 
 private:
-    void restoreObject(const PhysicalObjectPtr &obj, SimulationState *simState);
+    void restoreObject(const SimulationSubjectPtr &obj, SimulationState *simState);
 };
 
 #endif // SIMULATION_H

@@ -3,6 +3,7 @@
 
 #include <QRect>
 #include <QPoint>
+#include <QtDebug>
 
 void GraphicObject::setPosition(const QPoint &newPosition)
 {

@@ -14,7 +14,7 @@ TimeControlWidget::TimeControlWidget(QWidget *parent) :
     updateButtons();
 
     timer = new QTimer(this);
-    timer->setInterval(1000 / 60);
+    timer->setInterval(1000 / 30);
 
     connect(timer, &QTimer::timeout, this, &TimeControlWidget::timerTimeout);
     connect(ui->startButton, &QPushButton::clicked, this, &TimeControlWidget::startPressed);

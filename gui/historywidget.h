@@ -43,7 +43,6 @@ public slots:
 
 private:
     void updateStatus();
-
 };
 
 #endif // HISTORYWIDGET_H
