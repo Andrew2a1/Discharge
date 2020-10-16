@@ -64,6 +64,12 @@ AttributeEditorWidget *SimulationGraphicObject::createAttributeEditor(QWidget *p
 {
     AttributeEditorWidget* attrEdit = GraphicObject::createAttributeEditor(parent);
 
+    attrEdit->addDoubleAttr("Radius",
+                            [=](double radius) {
+                                getPhysical()->setRadius(radius);
+                            },
+                            getPhysical()->getRadius());
+
     attrEdit->addDoubleAttr("Mass",
                             [=](double mass) {
                                 getPhysical()->setMass(mass);
