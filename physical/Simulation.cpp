@@ -1,7 +1,7 @@
 #include "Simulation.h"
 #include "SimulationState.h"
 
-#include "SimulationSubject.h"
+#include "physical/SimulationSubject.h"
 #include "SimulationSubjectPtr.h"
 
 #include "toolbox/SavableData.h"

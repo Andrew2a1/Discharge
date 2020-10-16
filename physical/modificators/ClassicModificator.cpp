@@ -1,6 +1,6 @@
 #include "ClassicModificator.h"
-#include "SimulationSubject.h"
-#include "PhysicalConstants.h"
+#include "physical/SimulationSubject.h"
+#include "physical/PhysicalConstants.h"
 
 std::string ClassicModificator::name() const
 {
