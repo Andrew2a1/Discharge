@@ -4,7 +4,7 @@
 #include "../physical/Simulation.h"
 #include "../physical/SimulationState.h"
 
-#include "physical/ModificatorFactory.h"
+#include "physical/modificators/ModificatorFactory.h"
 #include "physical/SimulationSubjectPtr.h"
 #include "physical/SimulationSubject.h"
 #include "toolbox/SavableData.h"
@@ -16,8 +16,8 @@ TEST_CASE("Simulation applying time", "[Simulation]")
     SimulationSubjectPtr obj(new SimulationSubject(3, 1, 1e6));
     SimulationSubjectPtr obj2(new SimulationSubject(3, 1, 1e6));
 
-    obj->addModificator(ModificatorFactory::instance()->get("Classic"));
-    obj2->addModificator(ModificatorFactory::instance()->get("Classic"));
+    obj->addModificator(ModificatorFactory::instance()->get("AllInOne"));
+    obj2->addModificator(ModificatorFactory::instance()->get("AllInOne"));
 
     obj2->setPosition(Vector<>({1.4142, 1.4142, 0}));
 
@@ -31,6 +31,27 @@ TEST_CASE("Simulation applying time", "[Simulation]")
 
     CHECK_FALSE(obj->getPosition().almostEqual(Vector<>({0, 0, 0})));
     CHECK_FALSE(obj2->getPosition().almostEqual(Vector<>({1.4142, 1.4142, 0})));
+}
+
+TEST_CASE("Simulation multiple apply time", "[Simulation]")
+{
+    Simulation simulation;
+    constexpr int OBJECTS = 20;
+    constexpr int REPEAT = 100;
+
+    for(int i = 0; i < OBJECTS; ++i)
+    {
+        SimulationSubjectPtr obj(new SimulationSubject(3, 10, 1e6));
+        simulation.addSubject(obj);
+        obj->addModificator("AllInOne");
+    }
+
+    for(int i = 0; i < REPEAT; ++i)
+    { 
+        simulation.applyTime(0.25);
+    }
+
+    CHECK(simulation.getSubjects().size() == OBJECTS);
 }
 
 TEST_CASE("Simulation save and restore state", "[Simulation]")
@@ -124,4 +145,6 @@ TEST_CASE("Simulation save and restore from raw data", "[Simulation]")
 
     CHECK(simulation.getSubjects().size() == 3);
     CHECK(simulation.getSubjects().back().get()->getElectricCharge() == 2);
+
+    ModificatorFactory::deleteInstance();
 }

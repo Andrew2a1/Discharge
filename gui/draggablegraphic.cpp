@@ -65,9 +65,10 @@ QByteArray DraggableGraphic::getDraggableData()
 {
     QByteArray itemData;
     QDataStream dataStream(&itemData, QIODevice::WriteOnly);
+    GraphicObject *ptr = graphic.get();
 
     // Send pointer to graphic object
-    dataStream.writeRawData((char*)(&graphic), sizeof(graphic));
+    dataStream.writeRawData(reinterpret_cast<char*>(&ptr), sizeof(graphic));
     return itemData;
 }
 

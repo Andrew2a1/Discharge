@@ -270,7 +270,7 @@ Vector<RealNumber> SimulationSubject::restoreVector(SavableData *savable) const
 {
     Vector<RealNumber> result(savable->read());
 
-    for(int i = 0; i < velocity.size(); ++i)
+    for(int i = 0; i < result.size(); ++i)
         savable->read(RawBytes(&(result[i])), sizeof(RealNumber));
 
     return result;

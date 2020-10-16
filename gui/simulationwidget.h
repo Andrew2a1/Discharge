@@ -52,7 +52,7 @@ private:
 
 public:
     explicit SimulationWidget(QWidget *parent = nullptr);
-    ~SimulationWidget();
+    virtual ~SimulationWidget() override;
 
     void setCopyManager(CopyManager *manager);
     void setPrototypeManager(PrototypeManager *manager);

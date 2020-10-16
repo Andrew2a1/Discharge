@@ -8,8 +8,6 @@
 #include <QPushButton>
 
 #include <QAction>
-#include <QTimer>
-
 #include <QGridLayout>
 
 #include "physical/SimulationSubject.h"
@@ -100,8 +98,11 @@ void MainWindow::removeTab(int idx)
         QTabBar *tabBar = ui->tabWidget->tabBar();
         tabBar->tabButton(1 - idx, QTabBar::RightSide)->hide();
     }
-    if(ui->tabWidget->count() > 1)
+    if(ui->tabWidget->count() > 1) {
+        QWidget *widget = ui->tabWidget->widget(idx);
         ui->tabWidget->removeTab(idx);
+        widget->deleteLater();
+    }
 }
 
 void MainWindow::showAbout() const

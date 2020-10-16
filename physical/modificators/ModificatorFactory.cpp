@@ -25,6 +25,12 @@ ModificatorFactory *ModificatorFactory::instance()
     return unique;
 }
 
+void ModificatorFactory::deleteInstance()
+{
+    delete unique;
+    unique = nullptr;
+}
+
 ModificatorFactory::ModificatorFactory()
 {
     modificators.push_back(new ClassicModificator);

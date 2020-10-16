@@ -137,7 +137,8 @@ void SimulationWidget::paintEvent(QPaintEvent *event)
 bool SimulationWidget::isVisible(const GraphicObjectPtr &graphic) const
 {
     const QPoint bottomRightSim = toSimPosition(rect().bottomRight());
-    const QRect simRect = QRect(QPoint(0,0), bottomRightSim);
+    const QPoint topLeftSim = toSimPosition(rect().topLeft());
+    const QRect simRect = QRect(topLeftSim, bottomRightSim);
 
     return simRect.intersects(graphic->getBounds());
 }

@@ -5,7 +5,7 @@ PROG_NAME = discharge_tests
 OUT_DIR = bin
 BUILD_DIR = build
 
-WORK_DIRS = ../physical/ ../toolbox/
+WORK_DIRS = ../physical/ ../toolbox/ ../physical/modificators/
 
 TESTS_SRC = src
 INCLUDE_DIRS = $(patsubst %, -I%, $(WORK_DIRS)) -Iinclude -I..
@@ -30,6 +30,9 @@ $(BUILD_DIR)/%.o: $(TESTS_SRC)/%.cpp
 	$(CC) $(CXXFLAGS) $(INCLUDE_DIRS) -c $< -o $@
 
 $(BUILD_DIR)/%.o: ../*/%.cpp
+	$(CC) $(CXXFLAGS) $(INCLUDE_DIRS) -c $< -o $@
+
+$(BUILD_DIR)/%.o: ../*/*/%.cpp
 	$(CC) $(CXXFLAGS) $(INCLUDE_DIRS) -c $< -o $@
 
 build_dirs:

@@ -15,6 +15,8 @@ private:
     std::list<SimulationSubjectPtr> subjects;
 
 public:
+    virtual ~Simulation() = default;
+
     void applyTime(RealNumber dt);
 
     void addSubject(const SimulationSubjectPtr &subject);
