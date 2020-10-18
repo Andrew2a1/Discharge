@@ -4,7 +4,7 @@
 
 std::string ClassicModificator::name() const
 {
-    return "Classic";
+    return "AllInOne";
 }
 
 void ClassicModificator::applyTime(SimulationSubject *subject, RealNumber dt) const
