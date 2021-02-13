@@ -13,7 +13,8 @@ void Simulation::clearSubjects()
 }
 
 Simulation::Simulation() :
-    threadPool(4)
+    threadPool(std::thread::hardware_concurrency() > 0 ?
+                   std::thread::hardware_concurrency() : 1)
 {
 
 }
