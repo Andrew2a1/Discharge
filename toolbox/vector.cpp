@@ -169,12 +169,11 @@ Vector<T> &Vector<T>::operator=(const Vector<T> &vector)
 template<typename T>
 Vector<T> &Vector<T>::operator=(Vector<T> &&vector)
 {
-    delete matrix;
-    
-    matrix = vector.matrix;
+    *matrix = std::move(*vector.matrix);
     vector_size = vector.size();
     isColumnVector = vector.isColumn();
 
+    delete vector.matrix;
     vector.matrix = nullptr;
     vector.vector_size = 0;
 
