@@ -6,15 +6,20 @@
 #include "toolbox/Savable.h"
 
 #include "RealNumber.h"
+#include "toolbox/vector.h"
+
+#include "toolbox/ThreadPool.h"
 
 class SimulationState;
 
 class Simulation : public Savable
 {
 private:
+    ThreadPool threadPool;
     std::list<SimulationSubjectPtr> subjects;
 
 public:
+    Simulation();
     virtual ~Simulation() = default;
 
     void applyTime(RealNumber dt);
@@ -34,6 +39,20 @@ public:
 
 private:
     void restoreObject(const SimulationSubjectPtr &obj, SimulationState *simState);
+
+    std::vector<Vector<double>> calculateAllForces();
+    Vector<double> calculateForce(const SimulationSubjectPtr &subject) const;
+
+    template <typename InIterator, typename OutIterator>
+    void partialCalculate(InIterator first, InIterator last, OutIterator output) const {
+        InIterator current = first;
+        while(current != last)
+        {
+            *output = calculateForce(*current);
+            ++current;
+            ++output;
+        }
+    }
 };
 
 #endif // SIMULATION_H

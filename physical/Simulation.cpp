@@ -12,6 +12,13 @@ void Simulation::clearSubjects()
     subjects.clear();
 }
 
+Simulation::Simulation() :
+    threadPool(std::thread::hardware_concurrency() > 0 ?
+                   std::thread::hardware_concurrency() : 1)
+{
+
+}
+
 void Simulation::applyTime(RealNumber dt)
 {
     if (subjects.size() == 1)
@@ -20,31 +27,69 @@ void Simulation::applyTime(RealNumber dt)
     }
     else if (subjects.size() > 1)
     {
-        const Vector<double> vectZero = Vector<double>(subjects.front()->getPosition().size());
-        std::vector<Vector<double>> forces(subjects.size(), vectZero);
+        std::vector<Vector<double>> forces = calculateAllForces();
 
         int i = 0;
         for (auto &subject : subjects)
         {
             for (auto &other : subjects)
             {
-                if (subject != other)
-                {
-                    forces[i] += subject->calculateForce(other.get());
-
-                    if(subject->isCollision(other.get())) {
-                        subject->collide(other.get());
-                    }
-                }
+                if (subject != other && subject->isCollision(other.get()))
+                    subject->collide(other.get());
             }
-            ++i;
-        }
 
-        i = 0;
-        for (auto &subject : subjects) {
             subject->applyForce(forces[i++], dt);
         }
     }
+}
+
+std::vector<Vector<double>> Simulation::calculateAllForces()
+{
+    const Vector<double> vectZero = Vector<double>(subjects.front()->getDimensions());
+    std::vector<Vector<double>> forces(subjects.size(), vectZero);
+    std::list<std::future<void>> futures;
+
+    const int minForTask = std::fmax(10, subjects.size()/threadPool.threadCount());
+    const int tasks = subjects.size() / minForTask;
+
+    auto blockStart = subjects.begin();
+    auto outBlockStart = forces.begin();
+    for(int i = 0; i < tasks - 1; ++i)
+    {
+        auto blockEnd = blockStart;
+        std::advance(blockEnd, minForTask);
+
+        futures.push_back(threadPool.submit([=](){
+            partialCalculate(blockStart,
+                              blockEnd,
+                              outBlockStart);
+        }));
+
+        std::advance(outBlockStart, minForTask);
+        blockStart = blockEnd;
+    }
+
+    partialCalculate(blockStart, subjects.end(), outBlockStart);
+
+    for(const auto &future : futures)
+        future.wait();
+
+    return forces;
+}
+
+Vector<double> Simulation::calculateForce(const SimulationSubjectPtr &subject) const
+{
+    Vector<double> force(subject->getDimensions());
+
+    for (auto &other : subjects)
+    {
+        if (subject != other)
+        {
+            force += subject->calculateForce(other.get());
+        }
+    }
+
+    return force;
 }
 
 void Simulation::addSubject(const SimulationSubjectPtr &subject)
