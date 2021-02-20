@@ -11,4 +11,5 @@ public:
     virtual bool restore(SavableData *data);
 };
 
+
 #endif // SAVABLE_H

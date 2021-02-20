@@ -13,8 +13,7 @@ void Simulation::clearSubjects()
 }
 
 Simulation::Simulation() :
-    threadPool(std::thread::hardware_concurrency() > 0 ?
-                   std::thread::hardware_concurrency() : 1)
+    threadPool()
 {
 
 }
@@ -49,12 +48,12 @@ std::vector<Vector<double>> Simulation::calculateAllForces()
     std::vector<Vector<double>> forces(subjects.size(), vectZero);
     std::list<std::future<void>> futures;
 
-    const int minForTask = std::fmax(10, subjects.size()/threadPool.threadCount());
-    const int tasks = subjects.size() / minForTask;
+    const int minForTask = subjects.size()/(threadPool.threadCount() + 1);
+    const int tasks = minForTask > 0 ? threadPool.threadCount() : 0;
 
     auto blockStart = subjects.begin();
     auto outBlockStart = forces.begin();
-    for(int i = 0; i < tasks - 1; ++i)
+    for(int i = 0; i < tasks; ++i)
     {
         auto blockEnd = blockStart;
         std::advance(blockEnd, minForTask);

@@ -11,7 +11,7 @@ template <typename T = double>
 class Matrix
 {
 private:
-    T **matrix = nullptr;
+    T *matrix = nullptr;
     uint8_t rowCount = 0;
     uint8_t columnCount = 0;
 
@@ -64,11 +64,11 @@ public:
 
     inline void set(uint8_t row, uint8_t column, const T &value)
     {
-        matrix[row][column] = value;
+        matrix[row*getColumnCount() + column] = value;
     }
 
     inline T &get(uint8_t row, uint8_t column) const {
-        return matrix[row][column];
+        return matrix[row*getColumnCount() + column];
     }
 
     inline uint8_t getRowCount() const {
@@ -115,23 +115,6 @@ private:
     inline bool hasTheSameSize(const Matrix<T> &matrix) const {
         return this->getRowCount() == matrix.getRowCount() &&
                 this->getColumnCount() == matrix.getColumnCount();
-    }
-};
-
-template <typename T = double>
-class Axis
-{
-public:
-    static const Vector<T> X() {
-        return {1, 0, 0};
-    }
-
-    static const Vector<T> Y() {
-        return {0, 1, 0};
-    }
-
-    static const Vector<T> Z() {
-        return {0, 0, 1};
     }
 };
 

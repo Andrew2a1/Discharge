@@ -19,7 +19,7 @@ bool Vector<T>::isVector(const Matrix<T> &matrix)
 template<typename T>
 Vector<T> Vector<T>::fromMatrix(const Matrix<T> &matrix)
 {
-    Vector<T> vector(0);
+    Vector<T> vector(1);
     *(vector.matrix) = matrix;
     vector.vector_size = std::max(matrix.getRowCount(), matrix.getColumnCount());
     vector.isColumnVector = matrix.getRowCount() > matrix.getColumnCount();
@@ -138,23 +138,19 @@ bool Vector<T>::almostEqual(const Vector<T> &vector, const T &maxDelta) const
 template<typename T>
 T &Vector<T>::operator[](int i)
 {
-    int j = 0;
-
     if(isColumnVector)
-        std::swap(i, j);
+        return matrix->get(i, 0);
 
-    return matrix->get(j, i);
+    return matrix->get(0, i);
 }
 
 template<typename T>
 const T &Vector<T>::operator[](int i) const
 {
-    int j = 0;
-
     if(isColumnVector)
-        std::swap(i, j);
+        return matrix->get(i, 0);
 
-    return matrix->get(j, i);
+    return matrix->get(0, i);
 }
 
 template<typename T>
